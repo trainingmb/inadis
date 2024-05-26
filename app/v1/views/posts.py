@@ -15,10 +15,13 @@ def all_posts():
     """
     Returns a list of all posts
     """
+    all_creations = {}
+    for i in storage.all(Creator).values():
+        all_creations[i.id] = i
     all_posts = storage.all_select(Post, 
                 [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()
     posts=[i for i in sorted(all_posts, key=lambda i:(i.creation_id, i.reference))]
-    return render_template('user/list_posts.html', posts = posts)
+    return render_template('user/list_posts.html', posts=posts, creations=all_creations)
 
 @app_views.route('/creators/<creator_id>/creations/<creation_id>/newpost', methods=['POST', 'GET'], strict_slashes=False)
 def create_post(creator_id, creation_id):
