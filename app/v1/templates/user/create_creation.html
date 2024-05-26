@@ -23,7 +23,7 @@ Add Creator
     {% for field in form if not field.name in ["csrf_token", 'creation_creators', 'submit'] %}
 		<p>{{ field.label }}: {{ field }} <b>{{ " ".join(field.errors) }}</b></p>
 	{% endfor %}
-	    <p hiden='hidden'>{{ form.creation_creators.label }}: {{ form.creation_creators }} <b>{{ " ".join(form.creation_creators.errors) }}</b></p>
+	    <p hidden='hidden'>{{ form.creation_creators.label }}: {{ form.creation_creators }} <b>{{ " ".join(form.creation_creators.errors) }}</b></p>
     {{form.submit}}
     </form>
   </div>
