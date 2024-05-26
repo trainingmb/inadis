@@ -33,7 +33,7 @@ def create_post(creator_id, creation_id):
         abort(404, "Creation not Found")
     form = BasePostForm()
     form.post_creations.choices = [(creation_obj.id,creation_obj.name)]
-    form.creation_creators.data = creator_obj.id
+    form.post_creations.data = creation_obj.id
     if request.method == 'POST':
         if form.validate_on_submit():
             newpost_obj = Post(creation_id=creation_id, title=form.post_title.data,
