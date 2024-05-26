@@ -7,8 +7,9 @@ List Posts
 {% endblock %}
 
 {% block wrapper%}<div align="centre"><h1 class="display-4">Posts</h1></div>{% endblock %}
-{{creations}}
+
 {% block content %}
+{{creations}}
 <ul id="post_list" class="post_list">
 
 	{% for post in posts %}
