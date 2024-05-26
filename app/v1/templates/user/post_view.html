@@ -36,7 +36,7 @@ Creation View
     <div class="post_details_delete float-right">
         <form class="" action="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=post.id)}}" method="POST">
         					<input name="_method" value="DELETE" hidden>
-        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete {{ post.name.split(' ')[0].capitalize() }}">
+        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete {{ post.title.split(' ')[0].capitalize() }}">
         </form>
         	</br>
     </div>
