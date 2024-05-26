@@ -117,11 +117,11 @@ def gen_post():
     if len(creations) < 1:
         abort(404, "Creator Does Not have Creations")
     for create in creations:
-        if match(create.regexfilter.encode('utf-8').decode('unicode_escape'), crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
+        if match(create.regexfilter.encode('utf-8-sig-sig').decode('unicode_escape'), crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
             data = {}
-            data['title'] = crt.get('title',"").encode('utf-8').decode('unicode_escape')
-            data['content'] = crt.get('content',"").encode('utf-8').decode('unicode_escape')
-            data['comment'] = crt.get('comment',"").encode('utf-8').decode('unicode_escape')
+            data['title'] = crt.get('title',"").encode('utf-8-sig').decode('unicode_escape')
+            data['content'] = crt.get('content',"").encode('utf-8-sig').decode('unicode_escape')
+            data['comment'] = crt.get('comment',"").encode('utf-8-sig').decode('unicode_escape')
             data['reference'] = crt.get('url','').split('/')[-1]
             data['posted_at'] = crt.get('published',"")
             data['fetched_at'] = datetime.now()
