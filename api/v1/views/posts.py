@@ -117,7 +117,7 @@ def gen_post():
     if len(creations) < 1:
         abort(404, "Creator Does Not have Creations")
     for create in creations:
-        if match(create.regexfilter.encode('utf-8-sig-sig').decode('unicode_escape'), crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
+        if match(create.regexfilter.encode('utf-8-sig').decode('unicode_escape'), crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
             data = {}
             data['title'] = crt.get('title',"").encode('utf-8-sig').decode('unicode_escape')
             data['content'] = crt.get('content',"").encode('utf-8-sig').decode('unicode_escape')
