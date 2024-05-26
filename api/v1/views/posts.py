@@ -143,14 +143,10 @@ def gen_post():
                 data['posted_at'] = datetime.now()
             pts = {i.reference:i for i in create.posts_no_content}
             if pts.get(data['reference'], None) is not None:
-                posts_obj = pts.get(data['reference'], None)
-                for key, value in data.items():
-                    setattr(posts_obj, key, value)
-                posts_obj.save()
-            else:
-                instance = Post(**data)
-                instance.creation_id = create.id
-                instance.save()
+                pts.get(data['reference'], None).delete()
+            instance = Post(**data)
+            instance.creation_id = create.id
+            instance.save()
             return make_response(jsonify({"creationid": create.id, "creationname": create.name}), 201)
     return make_response(jsonify({"creationid": None, "creationname": ""}), 201)
 
