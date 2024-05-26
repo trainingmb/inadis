@@ -65,7 +65,7 @@ Creation View
 	</ul>
 	{% endif %}
 	</br>
-	<a href="#"> Add Post </a>
+	<a href="{{ url_for('app_views.create_post', creator_id=creation.creator_id, creation_id=creation.id )}}"> Add Post </a>
 	</div>
 </div>
 	</br>
