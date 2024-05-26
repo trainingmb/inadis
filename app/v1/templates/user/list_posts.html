@@ -14,7 +14,19 @@ List Posts
 
 	{% for post in posts %}
 	<li>
-		<h4><a href="{{url_for('app_views.rud_post', creator_id=creations[post[1]].creator_id, creation_id=post[1], post_id=post[0]) }}"> {{post[2]}} </a>-{{creations[post[0]].name}}</h4>
+		<h4>
+		    {% if post[1] in creations.keys() %}
+		    <a href="{{url_for('app_views.rud_post', creator_id='', creation_id=post[1], post_id=post[0]) }}">
+		        {{post[2]}}
+		    </a>
+		    - {{post[1]}}
+		    {% else %}
+		    <a href="#">
+		        {{post[2]}}
+		    </a>
+		    - {{post[1]}}
+		    {% endif %}
+		  </h4>
 		<h3>
 			{{post[3]}}
 		</h3>

@@ -16,7 +16,7 @@ def all_posts():
     Returns a list of all posts
     """
     all_creations = {}
-    for i in storage.all(Creator).values():
+    for i in storage.all(Creation).values():
         all_creations[i.id] = i
     all_posts = storage.all_select(Post, 
                 [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()
