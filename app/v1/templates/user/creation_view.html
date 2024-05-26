@@ -59,7 +59,7 @@ Creation View
 	<ul>
 		{% for post in posts %}
 		<li>
-			<a href="#"> {{post.title}} </a>
+			<a href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=post.id)}}"> {{post.title}} </a>
 		</li>
 		{% endfor %}
 	</ul>
