@@ -43,8 +43,27 @@ class Creation(BaseModel, Base):
                     post_list.append(post)
             return post_list
         @property
+        def posts_no_content(self):
+            """getter for list of posts related to the Creation"""
+            post_list = []
+            all_posts = models.storage.all(Post)
+            for post in all_posts.values():
+                if post.creation_id == self.id:
+                    post_list.append(post)
+            return post_list
+        @property
         def creator(self):
             """getter for creator"""
             crtor = models.storage.get(Creator, creator_id)
             return crtor
-
+    else:
+        @property
+        def posts_no_content(self):
+            """getter for list of posts related to the Creation"""
+            post_list = []
+            all_posts = models.storage.all_select(Post, 
+                [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at])
+            for post in all_posts.values():
+                if post.creation_id == self.id:
+                    post_list.append(post)
+            return post_list
