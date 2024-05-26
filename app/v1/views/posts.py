@@ -15,7 +15,7 @@ def all_posts():
     """
     Returns a list of all posts
     """
-    all_posts = models.storage.all_select(Post, 
+    all_posts = storage.all_select(Post, 
                 [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()
     posts=[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(all_posts, key=lambda i:i.reference)]
     return render_template('user/list_posts.html', posts = posts)
