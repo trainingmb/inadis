@@ -32,6 +32,7 @@ def create_post(creator_id, creation_id):
     if creation_obj is None or creation_obj.creator_id != creator_obj.id:
         abort(404, "Creation not Found")
     form = BasePostForm()
+    form.post_creations.choices = [(creation_obj.id,creation_obj.name)]
     if request.method == 'POST':
         if form.validate_on_submit():
             newpost_obj = Post(creation_id=creation_id, title=form.post_title.data,
@@ -40,7 +41,7 @@ def create_post(creator_id, creation_id):
                                    fetched_at=form.post_fetched_at.data)
             newpost_obj.save()
             return redirect(url_for('app_views.rud_post', creator_id=creator_id, creation_id=creation_obj.id, post_id=newpost_obj.id))
-    form.post_creations.choices = [(creation_obj.id,creation_obj.name)]
+    
     form.post_creations.data = creation_obj.id
     return render_template('user/create_post.html', creator=creator_obj, creation=creation_obj, form=form)
 
