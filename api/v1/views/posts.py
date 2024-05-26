@@ -117,11 +117,12 @@ def gen_post():
     if len(creations) < 1:
         abort(404, "Creator Does Not have Creations")
     for create in creations:
-        if match(create.regexfilter.encode('utf-8-sig').decode('unicode_escape'), crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
+        #.encode('utf-8-sig').decode('unicode_escape')
+        if match(create.regexfilter, crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
             data = {}
-            data['title'] = crt.get('title',"").encode('utf-8-sig').decode('unicode_escape')
-            data['content'] = crt.get('content',"").encode('utf-8-sig').decode('unicode_escape')
-            data['comment'] = crt.get('comment',"").encode('utf-8-sig').decode('unicode_escape')
+            data['title'] = crt.get('title',"")
+            data['content'] = crt.get('content',"")
+            data['comment'] = crt.get('comment',"")
             data['reference'] = crt.get('url','').split('/')[-1]
             data['posted_at'] = crt.get('published',"")
             data['fetched_at'] = datetime.now()
@@ -140,9 +141,16 @@ def gen_post():
                     data['posted_at'] = datetime.now()
             else:
                 data['posted_at'] = datetime.now()
-            instance = Post(**data)
-            instance.creation_id = create.id
-            instance.save()
+            pts = {i.reference:i for i in create.posts_no_content}
+            if pts.get(data['reference'], None) is not None:
+                posts_obj = pts.get(data['reference'], None)
+                for key, value in data.items():
+                    setattr(posts_obj, key, value)
+                posts_obj.save()
+            else:
+                instance = Post(**data)
+                instance.creation_id = create.id
+                instance.save()
             return make_response(jsonify({"creationid": create.id, "creationname": create.name}), 201)
     return make_response(jsonify({"creationid": None, "creationname": ""}), 201)
 
