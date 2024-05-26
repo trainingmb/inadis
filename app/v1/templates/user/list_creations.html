@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+<!-- templates/user/list_creations.html -->
+
+{% block title%}
+List Creations
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Creations</h1></div>{% endblock %}
+
+{% block content %}
+<ul id="creation_list" class="creation_list">
+
+	{% for creation in creations %}
+	<li>
+		<h4><a href="{{url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id) }}"> {{creation.name}} </a></h4>
+	</li>
+	{% endfor %}
+</ul>
+<a class="link" href="#">Create New Creation</a>
+{% endblock %}

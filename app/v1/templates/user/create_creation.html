@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+
+<!-- templates/user/create_creation.html -->
+
+{% block title%}
+Add Creator
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Add Creator to <a href="{{url_for('app_views.rud_creator', creator_id=creator.id)}}">{{ creator.name }}</a></h1></div>{% endblock %}
+{% block content %}
+<div class="content-section">
+	{% include 'includes/_formerror.html' %}
+  <br/>
+  {% if form.csrf_token.errors %}
+    <div class="warning">You have submitted an invalid CSRF token</div>
+  {% endif %}
+  <br/>
+  <div class="table-responsive">
+    <br/>
+    <form action="{{url_for('app_views.create_creation', creator_id=creator.id)}}" method="POST">
+    {{ form.csrf_token }}
+    {% for field in form if not field.name in ["csrf_token", 'creation_creators', 'submit'] %}
+		<p>{{ field.label }}: {{ field }} <b>{{ " ".join(field.errors) }}</b></p>
+	{% endfor %}
+	    <p hiden='hidden'>{{ form.creation_creators.label }}: {{ form.creation_creators }} <b>{{ " ".join(form.creation_creators.errors) }}</b></p>
+    {{form.submit}}
+    </form>
+  </div>
+</div>
+{% endblock %}
