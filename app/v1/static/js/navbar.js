@@ -43,9 +43,10 @@ function postnavbarHandlerJson(creatorsText)
 {
     var toggler = document.getElementById("navbar_creator_list");
     var crlink = document.getElementById("creator_link");
-	toggler.innerHTML = "";
-    console.log(JSON.parse(creatorsText));
-    creators = JSON.parse(creatorsText)
+    var creators = JSON.parse(creatorsText);
+    
+    toggler.innerHTML = "";
+    console.log(creators);
     console.log(creators);
 	for (var i = 0; i < creators.length; i++) {
 		var atag = document.createElement("a");
@@ -53,6 +54,26 @@ function postnavbarHandlerJson(creatorsText)
 		atag.classList.add("link");
 		atag.innerText = creators[i].name;
 	   	atag.setAttribute('href',crlink.getAttribute('href')+creators[i].id);
+        toggler.appendChild(atag.cloneNode(true));
+	}
+}
+function postnavbarHandlerJsonCreations(creatorsText)
+{
+    var toggler = document.getElementById("navbar_creation_list");
+    var crlink = document.getElementById("creation_link");
+	var creations = JSON.parse(creatorsText);
+    
+    console.log(creations);
+    toggler.innerHTML = "";
+	for (var i = 0; i < creations.length; i++) {
+		var atag = document.createElement("a");
+		atag.classList.add("dropdown-item");
+		atag.classList.add("link");
+		atag.innerText = creators[i].name;
+		let lnk = crlink.getAttribute('href');
+		lnk = lnk.replace('crtor_id', creations[i].creator_id);
+		lnk = lnk.replace('crtion_id', creations[i].id);
+	   	atag.setAttribute('href', lnk);
         toggler.appendChild(atag.cloneNode(true));
 	}
 }
@@ -80,11 +101,11 @@ function postnavbarHandler(htmltext)
 	}
 }
 
-function prenavbarHandler(url)
+function prenavbarHandler(url, postHandler)
 {
 	var toggler = document.getElementById("navbarDropdownMenuLink");
 	if(toggler.getAttribute("aria-expanded") == 'false')
 	{
-		requestURL(url, postnavbarHandlerJson);
+		requestURL(url, postHandler);
 	}
 }

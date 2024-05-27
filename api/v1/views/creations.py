@@ -9,6 +9,16 @@ from flasgger.utils import swag_from
 
 creation_tp = {'regexfilter': str, 'name': str}
 
+@api_views.route('/creations', methods=['GET'],
+                 strict_slashes=False)
+#@swag_from('documentation/creation/creations_by_creator.yml', methods=['GET'])
+def get_all_creations(creator_id):
+    """
+    Retrieves the list of all creations objects
+    """
+    list_creations = storage.all(Creation)
+    return jsonify(list_creations)
+
 @api_views.route('/creators/<creator_id>/creations', methods=['GET'],
                  strict_slashes=False)
 #@swag_from('documentation/creation/creations_by_creator.yml', methods=['GET'])
