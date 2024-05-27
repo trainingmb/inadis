@@ -69,7 +69,7 @@ function postnavbarHandlerJsonCreations(creatorsText)
 		var atag = document.createElement("a");
 		atag.classList.add("dropdown-item");
 		atag.classList.add("link");
-		atag.innerText = creators[i].name;
+		atag.innerText = creations[i].name;
 		let lnk = crlink.getAttribute('href');
 		lnk = lnk.replace('crtor_id', creations[i].creator_id);
 		lnk = lnk.replace('crtion_id', creations[i].id);
