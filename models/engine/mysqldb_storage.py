@@ -20,4 +20,4 @@ class MySQLDBStorage(DBStorage):
                                              INADIS_MYSQL_HOST,
                                              INADIS_MYSQL_DB))
         Base.metadata.bind = self.__engine
-        super().__init__()
+        super().__init__(self.__engine)

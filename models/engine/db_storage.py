@@ -25,8 +25,9 @@ class DBStorage:
     __engine = None
     __session = None
 
-    def __init__(self):
+    def __init__(self, engine=None):
         """Instantiate a DBStorage object"""
+        self.__engine = engine
         INADIS_ENV = getenv('INADIS_ENV')
         if INADIS_ENV == "test":
             Base.metadata.drop_all(self.__engine)

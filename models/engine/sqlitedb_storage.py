@@ -15,4 +15,4 @@ class SQLiteDBStorage(DBStorage):
 
         self.__engine = create_engine(f'sqlite:///{self.__file_path}')
         Base.metadata.bind = self.__engine
-        super().__init__()
+        super().__init__(self.__engine)
