@@ -5,7 +5,6 @@ Initialize Models Package
 
 from os import getenv, environ
 
-print("This is the ENVIRON:", environ)
 storage_t = getenv("INADIS_TYPE_STORAGE")
 
 if storage_t == "db":
