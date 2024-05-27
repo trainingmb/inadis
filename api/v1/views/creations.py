@@ -12,7 +12,7 @@ creation_tp = {'regexfilter': str, 'name': str}
 @api_views.route('/creations', methods=['GET'],
                  strict_slashes=False)
 #@swag_from('documentation/creation/creations_by_creator.yml', methods=['GET'])
-def get_all_creations(creator_id):
+def get_all_creations():
     """
     Retrieves the list of all creations objects
     """
