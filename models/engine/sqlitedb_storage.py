@@ -6,8 +6,6 @@ from models.engine.db_storage import Base, create_engine, DBStorage, path
 
 class SQLiteDBStorage(DBStorage):
     """interacts with the SQLite database"""
-    __engine = None
-    __session = None
     __file_path = "file.db"
 
     def __init__(self):

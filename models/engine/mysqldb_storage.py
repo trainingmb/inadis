@@ -7,8 +7,6 @@ from models.engine.db_storage import Base, create_engine, DBStorage, getenv
 
 class MySQLDBStorage(DBStorage):
     """interacts with the SQLite database"""
-    __engine = None
-    __session = None
 
     def __init__(self):
         """Instantiate a DBStorage object"""
