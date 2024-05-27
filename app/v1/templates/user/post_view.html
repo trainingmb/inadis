@@ -10,7 +10,7 @@ Creation View
 <div align="centre">
 	<h1 class="display-4">
 		Post {{post.title}} - 
-	<a href="{{url_for('app_views.rud_creation', creator_id=creator.id, creation_id=post.creation_id)}}">
+	<a href="{{url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}">
 		{{ post.creation.name }}
 	</a>
 	</h1>
@@ -36,7 +36,10 @@ Creation View
             <strong>Fetched At</strong>:<br>{{post.fetched_at}}
         </p>
         <p>
-            <strong>Creation Name</strong>:<br>{{post.creation.name}}
+            <strong>Creation Name</strong>:<br>
+            <a href="{{url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}">
+				{{ post.creation.name }}
+			</a>
         </p>
         <p>
             <strong>Content</strong>:<br>

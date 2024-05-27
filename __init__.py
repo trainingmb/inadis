@@ -2,6 +2,7 @@
 # inadis/__init__.py
 
 import os
+
 from flask import Flask, render_template
 # from flask_sqlalchemy import SQLAlchemy
 # from flask_login import LoginManager
@@ -10,9 +11,6 @@ from flask import Flask, render_template
 from app.config import app_config
 import importlib
 
-#app = Flask(__name__, template_folder='templates', instance_relative_config=True)
-
-print(u"Current path is", os.path.abspath(os.curdir), sep=' ')
 
 
 def create_app(config_name, version):

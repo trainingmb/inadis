@@ -8,35 +8,26 @@ from models.base_model import BaseModel, Base
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
-from os import getenv
+from os import getenv, path
 import sqlalchemy
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 classes = {"Creator": Creator, "Creation": Creation,
           "Post": Post}
-class_tables = {"Creator": [Creator.id, Creator.reference, Creator.name, Creator.link],
-          "Creation": [Creation.id, Creation.regexfilter, Creation.name, Creation.creator_id],
-          "Post": [Post.id, Post.creation_id, Post.title, Post.content, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]}
+class_tables = {"Creator": [ Creator.reference, Creator.name, Creator.link],
+          "Creation": [ Creation.regexfilter, Creation.name, Creation.creator_id],
+          "Post": [ Post.creation_id, Post.title, Post.content, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]}
 
 
 class DBStorage:
-    """interacts with the MySQL database"""
+    """interacts with the database"""
     __engine = None
     __session = None
 
     def __init__(self):
         """Instantiate a DBStorage object"""
-        INADIS_MYSQL_USER = getenv('INADIS_MYSQL_USER')
-        INADIS_MYSQL_PWD = getenv('INADIS_MYSQL_PWD')
-        INADIS_MYSQL_HOST = getenv('INADIS_MYSQL_HOST')
-        INADIS_MYSQL_DB = getenv('INADIS_MYSQL_DB')
         INADIS_ENV = getenv('INADIS_ENV')
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(INADIS_MYSQL_USER,
-                                             INADIS_MYSQL_PWD,
-                                             INADIS_MYSQL_HOST,
-                                             INADIS_MYSQL_DB))
         if INADIS_ENV == "test":
             Base.metadata.drop_all(self.__engine)
 

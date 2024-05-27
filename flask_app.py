@@ -1,13 +1,15 @@
 #!/usr/bin/python3
 # A very simple Flask Hello World app for you to get started with...
-
+from os import environ, getcwd
+import sys    
 from models import storage
-from inadis import create_app
-from os import environ
+from __init__ import create_app
 from flask import Flask, render_template, request, make_response, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
 from flasgger.utils import swag_from
+
+print("Current Working directory is ", getcwd())
 
 app = create_app('development', 'v1')
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
@@ -75,4 +77,3 @@ Swagger(app)
 @app.route('/')
 def hello_world():
     return 'Hello from Flask!'
-

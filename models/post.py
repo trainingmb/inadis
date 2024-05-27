@@ -36,9 +36,9 @@ class Post(BaseModel, Base):
         """initializes user"""
         super().__init__(*args, **kwargs)
     if models.storage_t != "db":
-        from models.creation import Creation
         @property
         def creation(self):
             """getter for creation"""
+            from models.creation import Creation
             crtion = models.storage.get(Creation, creation_id)
             return crtion

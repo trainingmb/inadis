@@ -32,7 +32,6 @@ class Creation(BaseModel, Base):
         super().__init__(*args, **kwargs)
 
     if models.storage_t != "db":
-        from models.creator import Creator
         @property
         def posts(self):
             """getter for list of posts related to the Creation"""
@@ -54,6 +53,7 @@ class Creation(BaseModel, Base):
         @property
         def creator(self):
             """getter for creator"""
+            from models.creator import Creator
             crtor = models.storage.get(Creator, creator_id)
             return crtor
     else:

@@ -8,6 +8,7 @@ from models import storage
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
+from datetime import datetime
 
 
 @app_views.route('/posts', methods=['GET'], strict_slashes=False)
@@ -46,6 +47,8 @@ def create_post(creator_id, creation_id):
             return redirect(url_for('app_views.rud_post', creator_id=creator_id, creation_id=creation_obj.id, post_id=newpost_obj.id))
     
     form.post_creations.data = creation_obj.id
+    form.post_posted_at.data = datetime.now()
+    form.post_fetched_at.data = datetime.now()
     return render_template('user/create_post.html', creator=creator_obj, creation=creation_obj, form=form)
 
 @app_views.route('/creators/<creator_id>/creations/<creation_id>/posts/<post_id>', methods=['POST', 'GET', 'DELETE'])
