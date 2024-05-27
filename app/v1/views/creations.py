@@ -55,6 +55,13 @@ def rud_creation(creator_id, creation_id):
         creation_obj.delete()
         storage.save()
         return redirect(url_for('app_views.all_creations'))
+    if '_method' in request.form.keys() and request.form['_method'] == 'CLEAN':
+        posts=[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(creation_obj.posts_no_content, key=lambda i:(i.reference, i.fetch_date), reverse=True)]
+        for c in range(1,len(posts)):
+            if posts[c].reference == posts[c-1].reference:
+                storage.get(Post, posts[c].id).delete()
+        storage.save()
+        return redirect(url_for('app_views.all_creations'))
     if request.method == 'POST':
         if form.validate_on_submit():
             creation_obj.name = form.creation_name.data

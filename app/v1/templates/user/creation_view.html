@@ -28,7 +28,13 @@ Creation View
     <div class="creation_details_edit_button float-right">
         <button id="edit_creation_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit {{ creation.name.split(' ')[0].capitalize() }} </button>
     </div>
-
+    <div class="creation_details_clean float-right">
+        <form class="" action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">
+        					<input name="_method" value="Clean" hidden>
+        					<input class="btn btn-primary btn-sm btn-warning" id="submit" label="Clean" name="" type="submit" value="Clean {{ creation.name.split(' ')[0].capitalize() }}">
+        </form>
+        	</br>
+    </div>
 </div>
 <div id="creation_details_edit" class='container creation'>
     <form action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">
