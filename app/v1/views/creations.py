@@ -7,7 +7,7 @@ from app.v1.views import BaseCreationForm
 from models import storage
 from models.creator import Creator
 from models.creation import Creation
-
+from models.post import Post
 
 @app_views.route('/creations', methods=['GET'], strict_slashes=False)
 def all_creations():
