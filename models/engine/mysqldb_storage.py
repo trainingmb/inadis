@@ -3,7 +3,7 @@
 Contains the class MySQLDBStorage
 """
 
-from models.engine.db_storage import create_engine, DBStorage, getenv 
+from models.engine.db_storage import Base, create_engine, DBStorage, getenv 
 
 class MySQLDBStorage(DBStorage):
     """interacts with the SQLite database"""
@@ -21,4 +21,5 @@ class MySQLDBStorage(DBStorage):
                                              INADIS_MYSQL_PWD,
                                              INADIS_MYSQL_HOST,
                                              INADIS_MYSQL_DB))
+        Base.metadata.bind = self.__engine
         super().__init__()
