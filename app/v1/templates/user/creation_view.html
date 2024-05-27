@@ -15,7 +15,9 @@ Creation View
                 <strong>Regex Filter</strong>:{{creation.regexfilter}}
             </p>
             <p>
-                <strong>Creator Name</strong>:{{creation.creator.name}}
+                <strong>Creator Name</strong>:
+                <a href="{{ url_for('app_views.rud_creator', creator_id=creation.creator_id)}}">{{creation.creator.name}}
+                </a>
             </p>
     </div>
     <div class="creation_details_delete float-right">

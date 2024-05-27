@@ -109,3 +109,37 @@ function prenavbarHandler(url, postHandler)
 		requestURL(url, postHandler);
 	}
 }
+
+function selectCurrent()
+{
+	var currentlink = document.location.href;
+	var x;
+	if(currentlink.match('creations') != null)
+	{
+		x = document.getElementsByClassName('nav-item-creations')[0];
+		x.className += ' active'; 
+	}
+	else if(currentlink.match('creators') != null)
+	{
+		x = document.getElementsByClassName('nav-item-creators')[0];
+		x.className += ' active'; 
+	}
+	else if(currentlink.match('about') != null)
+	{
+		x = document.getElementsByClassName('nav-item-about')[0];
+		x.className += ' active'; 
+	}
+	else
+	{
+		x = document.getElementsByClassName('nav-item-home')[0];
+		x.className += ' active'; 
+	}
+	y = x.getElementsByClassName('sr-link');
+	if (y.length > 0)
+	{
+		y[0].remove();
+	}
+	x.getElementsByClassName('nav-link')[0].innerHTML += '<span class="sr-only">(current)</span>';
+	return x;
+}
+
