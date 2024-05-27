@@ -16,7 +16,7 @@ def get_all_creations():
     """
     Retrieves the list of all creations objects
     """
-    list_creations = storage.all(Creation)
+    list_creations = [i.to_dict() for i in storage.all(Creation).values()]
     return jsonify(list_creations)
 
 @api_views.route('/creators/<creator_id>/creations', methods=['GET'],
