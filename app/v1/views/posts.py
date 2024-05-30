@@ -72,7 +72,7 @@ def rud_post(creator_id, creation_id, post_id):
     if '_method' in request.form.keys() and request.form['_method'] == 'DELETE':
         post_obj.delete()
         storage.save()
-        return redirect(url_for('app_views.red_creation', creator_id=creator_obj.id, creation_id=creation_obj.id))
+        return redirect(url_for('app_views.rud_creation', creator_id=creator_obj.id, creation_id=creation_obj.id))
     if request.method == 'POST':
         if form.validate_on_submit():
             post_obj.title = form.post_title.data
