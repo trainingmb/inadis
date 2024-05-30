@@ -59,6 +59,31 @@ def get_creations_by_reference(creator_reference):
         list_creations.append(creation.to_dict())
     return jsonify(list_creations)
 
+@api_views.route('/creators_reference/<creator_reference>/latest_posts', methods=['GET'],
+                 strict_slashes=False)
+#@swag_from('documentation/creation/creations_by_creator_reference.yml', methods=['GET'])
+def get_latest_posts_by_reference(creator_reference):
+    """
+    Retrieves the list of all creations objects
+    of a specific Creator, or a specific creation
+    """
+    list_creations = []
+    if not creator_reference.isnumeric():
+        abort(400, "Creator Reference Invalid")
+    all_creators = storage.all(Creator).values()
+    creator = None
+    for cr in all_creators:
+        if cr.reference == int(creator_reference):
+            creator = cr
+            break
+    if not creator:
+        abort(404, "Creator Not Found")
+    for creation in creator.creations:
+        crr = creation.to_dict()
+        crr['latest_post'] = creation.latest_post
+        list_creations.append(crr)
+    return jsonify(list_creations)
+
 @api_views.route('/creations/<creation_id>/', methods=['GET'], strict_slashes=False)
 #@swag_from('documentation/creation/get_creation.yml', methods=['GET'])
 def get_creation(creation_id):

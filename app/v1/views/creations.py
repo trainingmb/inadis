@@ -56,7 +56,7 @@ def rud_creation(creator_id, creation_id):
         storage.save()
         return redirect(url_for('app_views.all_creations'))
     if '_method' in request.form.keys() and request.form['_method'] == 'CLEAN':
-        posts=[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(creation_obj.posts_no_content, key=lambda i:(i.reference, i.fetched_at), reverse=True)]
+        posts=creation_obj.posts_no_content#[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(, key=lambda i:(i.reference, i.fetched_at), reverse=True)]
         for c in range(1,len(posts)):
             print(c)
             if posts[c]['reference'] == posts[c-1]['reference']:
@@ -76,5 +76,5 @@ def rud_creation(creator_id, creation_id):
     form.creation_regexfilter.data = creation_obj.regexfilter
     form.creation_creators.data = creation_obj.creator_id
     form.submit.label.text = "Save Changes"
-    posts=[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(creation_obj.posts_no_content, key=lambda i:i.reference)]
+    posts=creation_obj.posts_no_content#[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(creation_obj.posts_no_content, key=lambda i:i.reference)]
     return render_template('user/creation_view.html', creation=creation_obj, posts=posts, form=form)
