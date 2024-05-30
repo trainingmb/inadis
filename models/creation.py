@@ -64,8 +64,7 @@ class Creation(BaseModel, Base):
             all_posts = models.storage.all_defer(Post, Post.content).values()
             print(f"All posts for {self.name} are {len(all_posts)}")
             for post in all_posts:
-                print(post['creation_id'], " vs ", self.id)
-                if post['creation_id'] == self.id:
+                if post.creation_id == self.id:
                     post_list.append(post)
             print(f"Filtered posts for {self.name} are {len(post_list)}")
             return sorted(post_list, key=lambda i:i.posted_at, reverse=True)
