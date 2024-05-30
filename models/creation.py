@@ -49,7 +49,7 @@ class Creation(BaseModel, Base):
             for post in all_posts.values():
                 if post.creation_id == self.id:
                     post_list.append(post)
-            return sorted(post_list, key=lambda i:i.posted_at, reverse=True)
+            return sorted(post_list, key=lambda i:i.reference, reverse=True)
         @property
         def creator(self):
             """getter for creator"""
@@ -67,7 +67,7 @@ class Creation(BaseModel, Base):
                 if post.creation_id == self.id:
                     post_list.append(post)
             print(f"Filtered posts for {self.name} are {len(post_list)}")
-            return sorted(post_list, key=lambda i:i.posted_at, reverse=True)
+            return sorted(post_list, key=lambda i:i.reference, reverse=True)
     @property
     def latest_post(self):
         p = self.posts_no_content
