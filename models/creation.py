@@ -63,8 +63,6 @@ class Creation(BaseModel, Base):
             post_list = []
             all_posts = models.storage.all_defer(Post, Post.content).values()
             print(f"All posts for {self.name} are {len(all_posts)}")
-            if len(all_posts) > 0:
-                print(f"Example {all_posts[0]}")
             for post in all_posts:
                 print(post['creation_id'], " vs ", self.id)
                 if post['creation_id'] == self.id:
