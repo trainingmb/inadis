@@ -4,3 +4,4 @@
 file.db
 run.py
 /app/v1/instance
+app/v1/static/js/k.js
