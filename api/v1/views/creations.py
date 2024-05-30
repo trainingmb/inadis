@@ -81,6 +81,8 @@ def get_latest_posts_by_reference(creator_reference):
     for creation in creator.creations:
         crr = creation.to_dict()
         crr['latest_post'] = creation.latest_post
+        if crr['latest_post'] is not None:
+            crr['latest_post'] = crr['latest_post'].to_dict()
         list_creations.append(crr)
     return jsonify(list_creations)
 
