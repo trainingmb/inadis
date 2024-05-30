@@ -65,7 +65,10 @@ class Creation(BaseModel, Base):
                 'posted_at':i[5], 'fetched_at':i[6]} for i in models.storage.all_select(Post, 
                 [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()]
             print(f"All posts for {self.name} are {len(all_posts)}")
+            if len(all_posts) > 0:
+                print(f"Example {all_posts[0]}")
             for post in all_posts:
+                print(post['creation_id'], " vs ", self.id)
                 if post['creation_id'] == self.id:
                     post_list.append(post)
             print(f"Filtered posts for {self.name} are {len(posts_list)}")
