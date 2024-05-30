@@ -63,7 +63,8 @@ class Creation(BaseModel, Base):
             post_list = []
             all_posts = [{'id':i[0], 'creation_id':i[1], 'title':i[2], 'comment':i[3], 'reference':i[4],
                 'posted_at':i[5], 'fetched_at':i[6]} for i in models.storage.all_select(Post, 
-                [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at])]
+                [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()]
+            print("#######################all posts", all_posts)
             for post in all_posts:
                 if post['creation_id'] == self.id:
                     post_list.append(post)
