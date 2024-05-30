@@ -77,4 +77,5 @@ def rud_creation(creator_id, creation_id):
     form.creation_creators.data = creation_obj.creator_id
     form.submit.label.text = "Save Changes"
     posts=creation_obj.posts_no_content#[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(creation_obj.posts_no_content, key=lambda i:i.reference)]
+    print(posts)
     return render_template('user/creation_view.html', creation=creation_obj, posts=posts, form=form)
