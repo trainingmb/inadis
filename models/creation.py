@@ -71,7 +71,7 @@ class Creation(BaseModel, Base):
                 print(post['creation_id'], " vs ", self.id)
                 if post['creation_id'] == self.id:
                     post_list.append(post)
-            print(f"Filtered posts for {self.name} are {len(posts_list)}")
+            print(f"Filtered posts for {self.name} are {len(post_list)}")
             return sorted(post_list, key=lambda i:i.posted_at, reverse=True)
     @property
     def latest_post(self):
