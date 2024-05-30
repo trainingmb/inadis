@@ -61,9 +61,7 @@ class Creation(BaseModel, Base):
         def posts_no_content(self):
             """getter for list of posts related to the Creation"""
             post_list = []
-            all_posts = [{'id':i[0], 'creation_id':i[1], 'title':i[2], 'comment':i[3], 'reference':i[4],
-                'posted_at':i[5], 'fetched_at':i[6]} for i in models.storage.all_select(Post, 
-                [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()]
+            all_posts = models.storage.all_defer(Post, Post.content).values()
             print(f"All posts for {self.name} are {len(all_posts)}")
             if len(all_posts) > 0:
                 print(f"Example {all_posts[0]}")

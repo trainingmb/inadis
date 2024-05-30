@@ -11,6 +11,7 @@ from models.post import Post
 from os import getenv, path
 import sqlalchemy
 from sqlalchemy import create_engine
+from sqlalchemy.orm import defer
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 classes = {"Creator": Creator, "Creation": Creation,
@@ -56,6 +57,17 @@ class DBStorage:
         for clss in classes:
             if cls is None or cls is classes[clss] or cls is clss:
                 objs = self.__session.query(classes[clss]).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + '.' + obj.id
+                    new_dict[key] = obj
+        return (new_dict)
+
+    def all_defer(self, cls, deffered):
+        """query on the current database session"""
+        new_dict = {}
+        for clss in classes:
+            if cls is None or cls is classes[clss] or cls is clss:
+                objs = self.__session.query(classes[clss]).options(def(deffered)).all()
                 for obj in objs:
                     key = obj.__class__.__name__ + '.' + obj.id
                     new_dict[key] = obj
