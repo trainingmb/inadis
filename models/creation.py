@@ -75,7 +75,6 @@ class Creation(BaseModel, Base):
             return None
         else:
             return p[0]
-    @property
     def next_post(self, post_id=''):
         p = [i.id for i in self.posts_no_content]
         if p == [] or post_id == '':
@@ -84,11 +83,10 @@ class Creation(BaseModel, Base):
             try:
                 n = p.index(post_id)
                 if n > 0:
-                    return n-1
+                    return p[n-1]
             except ValueError:
                 return None
         return None
-    @property
     def prev_post(self, post_id=''):
         p = [i.id for i in self.posts_no_content]
         if p == [] or post_id == '':
@@ -96,8 +94,8 @@ class Creation(BaseModel, Base):
         else:
             try:
                 n = p.index(post_id)
-                if n < (p.length - 1):
-                    return n+1
+                if n < (len(p) - 1):
+                    return p[n+1]
             except ValueError:
                 return None
         return None
