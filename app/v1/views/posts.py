@@ -94,3 +94,23 @@ def rud_post(creator_id, creation_id, post_id):
     form.post_creations.data = post_obj.creation_id
     form.submit.label.text = "Save Changes"
     return render_template('user/post_view.html', creator_obj=creator_obj, creation=creation_obj, post=post_obj, form=form)
+
+@app_views.route('/creators/<creator_id>/creations/<creation_id>/posts/<post_id>/next', methods=['GET'])
+def get_next_post(creator_id, creation_id, post_id):
+    """
+    Get Next Post
+    """
+    creator_obj = storage.get(Creator, creator_id)
+    if creator_obj is None:
+        abort(404, "Creator not Found")
+    creation_obj = storage.get(Creation, creation_id)
+    if creation_obj is None or creation_obj.creator_id != creator_obj.id:
+        abort(404, "Creation not Found")
+    post_obj = storage.get(Post, post_id)
+    if post_obj is None or creation_obj.id != post_obj.creation_id:
+        abort(404, "Post not Found")
+    next_p = creator_obj.get_next_post(post_id)
+    if next_p is None:
+        return redirect(url_for('app_views.rud_post', creator_id=creator_id, creation_id=creation_id, post_id=post_id))
+    else:
+        return redirect(url_for('app_views.rud_post', creator_id=creator_id, creation_id=creation_id, post_id=next_p))
