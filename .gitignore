@@ -5,3 +5,5 @@ file.db
 run.py
 /app/v1/instance
 app/v1/static/js/k.js
+app/v1/static/js/v.js
+app/v1/instance/config.py
