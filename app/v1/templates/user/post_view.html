@@ -46,7 +46,7 @@ Creation View
         <p>
             <strong>Previous Post</strong>:<br>
             <div class="post_details_edit_button float-right">
-            	<a href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=creation.prev_post(post.id)))}}">
+            	<a href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=creation.prev_post(post.id))}}">
         		<button id="edit_post_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Previous Post </button>
         		</a>
     		</div>
