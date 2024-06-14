@@ -38,7 +38,7 @@ class Post(BaseModel, Base):
         """getter for creation"""
         from models.post_content import PostContent
         crtion = models.storage.filtered_get(PostContent, post_id=self.id)
-        if crtion is not None and len(crtion) > 1:
+        if crtion is not None and type(crtion) == list:
             return crtion[-1]
         return crtion
     def has_content(self):
