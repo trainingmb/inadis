@@ -18,7 +18,6 @@ class Post(BaseModel, Base):
         creation_id = Column('creationid', String(60), ForeignKey('creations.id'), nullable=False)
         creation = relationship('Creation', back_populates='posts')
         title = Column('title', String(255))
-        content = Column('content', String(65535))
         comment = Column('comment', String(255))
         reference = Column('reference', Integer, nullable=False)
         posted_at = Column(DateTime)
@@ -26,7 +25,6 @@ class Post(BaseModel, Base):
     else:
         creation_id = ""
         title = ""
-        content = ""
         comment = ""
         reference = 0
         posted_at = datetime.utcnow()
@@ -35,10 +33,17 @@ class Post(BaseModel, Base):
     def __init__(self, *args, **kwargs):
         """initializes user"""
         super().__init__(*args, **kwargs)
-    if models.storage_t != "db":
-        @property
-        def creation(self):
-            """getter for creation"""
-            from models.creation import Creation
-            crtion = models.storage.get(Creation, creation_id)
-            return crtion
+    
+    def get_content(self):
+        """getter for creation"""
+        from models.post_content import PostContent
+        crtion = models.storage.filtered_get(PostContent, post_id=self.id)
+        if crtion is not None and len(crtion) > 1:
+            return crtion[-1]
+        return crtion
+    def has_content(self):
+        from models.post_content import PostContent
+        crtion = models.storage.filtered_get(PostContent, post_id=self.id)
+        if crtion is not None:
+            return true
+        return false

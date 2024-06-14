@@ -34,9 +34,4 @@ class Creator(BaseModel, Base):
         @property
         def creations(self):
             """getter for list of creations related to the creator"""
-            creation_list = []
-            all_creations = models.storage.all(Creation)
-            for creation in all_creations.values():
-                if creation.creator_id == self.id:
-                    creation_list.append(creation)
-            return creation_list
+            return models.storage.all(Creation).filtered_get(Creation, creator_id = self.id)

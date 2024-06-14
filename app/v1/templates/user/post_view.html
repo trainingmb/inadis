@@ -68,7 +68,10 @@ Creation View
         </p>
         <p>
             <strong>Content</strong>:<br>
-            <code>{{post.content | safe }}</code>
+            {% if post.get_content() %}
+                <code>{{post.get_content().content | safe }}</code>
+            {% endif %}
+                <code>{{post.get_content().content | safe }}</code>
         </p>
     </div>
     <div class="post_details_delete float-right">
