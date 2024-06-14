@@ -105,7 +105,7 @@ def rud_post(creator_id, creation_id, post_id):
     form.post_fetched_at.data = post_obj.fetched_at
     form.post_creations.data = post_obj.creation_id
     form.submit.label.text = "Save Changes"
-    return render_template('user/post_view.html', creator_obj=creator_obj, creation=creation_obj, post=post_obj, form=form)
+    return render_template('user/post_view.html', creator_obj=creator_obj, creation=creation_obj, post=post_obj, content=post_obj.get_content(), form=form)
 
 @app_views.route('/creators/<creator_id>/creations/<creation_id>/posts/<post_id>/next', methods=['GET'])
 def get_next_post(creator_id, creation_id, post_id):
