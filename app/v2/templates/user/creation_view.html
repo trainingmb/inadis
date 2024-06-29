@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+<!-- templates/user/creation_view.html -->
+
+{% block title%}
+Creation View
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Creation {{creation.name}} </h1></div>{% endblock %}
+
+{% block content %}
+<div id="creation_details_view" class='container creation'>
+    <div class="creation_details align-right">
+            <p>
+                <strong>Regex Filter</strong>:{{creation.regexfilter}}
+            </p>
+            <p>
+                <strong>Creator Name</strong>:
+                <a href="{{ url_for('app_views.rud_creator', creator_id=creation.creator_id)}}">{{creation.creator.name}}
+                </a>
+            </p>
+    </div>
+    <div class="creation_details_delete float-right">
+        <form class="" action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">
+        					<input name="_method" value="DELETE" hidden>
+        					<input class="btn btn-primary btn-sm btn-danger" id="submit" label="delete" name="" type="submit" value="Delete {{ creation.name.split(' ')[0].capitalize() }}">
+        </form>
+        	</br>
+    </div>
+    <div class="creation_details_edit_button float-right">
+        <button id="edit_creation_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit {{ creation.name.split(' ')[0].capitalize() }} </button>
+    </div>
+    <div class="creation_details_clean float-right">
+        <form class="" action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">
+        					<input name="_method" value="CLEAN" hidden>
+        					<input class="btn btn-primary btn-sm btn-warning" id="submit" label="Clean" name="" type="submit" value="Clean {{ creation.name.split(' ')[0].capitalize() }}">
+        </form>
+        	</br>
+    </div>
+</div>
+<div id="creation_details_edit" class='container creation'>
+    <form action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">
+    	<table>
+    		<tbody>
+                {{ form.csrf_token }}
+                {% for field in form if not field.name in ["csrf_token", 'submit'] %}
+            		<tr>
+                		<td>{{ field.label }}</td>
+                		<td>{{ field }}</td>
+                		</td><b>{{ " ".join(field.errors) }}</b></td>
+            		</tr>
+            	{% endfor %}
+                <tr>
+                    <td>{{form.submit}}</td>
+                </tr>
+        		<tr>
+        		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
+        	    </tr>
+    		</tbody>
+    	</table>
+    </form>
+</div>
+<div id="posts_in_creation">
+	<h4 class="h4"> <a href=""> Posts </a> </h4> </br>
+	<div class="well card card-body bg-light">
+	{% if posts %}
+	<ul>
+		{% for post in posts %}
+		<li>
+			<a href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=post.id)}}"> {{post.title}} </a> - {{post.fetched_at}}
+		</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	</br>
+	<a href="{{ url_for('app_views.create_post', creator_id=creation.creator_id, creation_id=creation.id )}}"> Add Post </a>
+	</div>
+</div>
+	</br>
+
+
+
+
+<script>
+document.getElementById("edit_creation_btn").addEventListener("click", showEdit);
+document.getElementById("cancel_change_btn").addEventListener("click", hideEdit);
+document.getElementById("creation_details_edit").style.display = "none";
+function showEdit() {
+	document.getElementById("creation_details_view").style.display = "none";
+	document.getElementById("creation_details_edit").style.display = "block";
+}
+function hideEdit() {
+	document.getElementById("creation_details_edit").style.display = "none";
+	document.getElementById("creation_details_view").style.display = "block";
+}
+</script>
+
+{% endblock %}

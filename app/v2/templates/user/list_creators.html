@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+<!-- templates/user/list_creators.html -->
+
+{% block title%}
+List Creators
+{% endblock %}
+
+{% block wrapper%}<div align="centre"><h1 class="display-4">Creators</h1></div>{% endblock %}
+
+{% block content %}
+<ul id="creator_list" class="creator_list">
+
+	{% for creator in creators %}
+	<li>
+		<h4><a href="{{url_for('app_views.rud_creator', creator_id=creator.id) }}"> {{creator.name}} </a></h4>
+	</li>
+	{% endfor %}
+</ul>
+<a class="link" href="{{ url_for('app_views.create_creator') }}">Create New Creator</a>
+{% endblock %}
