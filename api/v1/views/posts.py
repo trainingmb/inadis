@@ -3,6 +3,7 @@
 from models.post import Post
 from models.creator import Creator
 from models.creation import Creation
+from models.post_content import PostContent
 from models import storage
 from api.v1.views import api_views
 from flask import abort, jsonify, make_response, request
@@ -89,6 +90,8 @@ def post_post(creator_id, creation_id):
     instance = Post(**data)
     instance.creation_id = creation.id
     instance.save()
+    instance2 = PostContent(post_id=instance.id, content=data.get('content', ''))
+    instance2.save()
     return make_response(jsonify(instance.to_dict()), 201)
 
 @api_views.route('/generate_post', methods=['POST'],
@@ -120,8 +123,9 @@ def gen_post():
         #.encode('utf-8-sig').decode('unicode_escape')
         if match(create.regexfilter, crt.get('title',"")) is not None or match(create.regexfilter, crt.get('title',"")) is not None:
             data = {}
+            data2 = {}
             data['title'] = crt.get('title',"")
-            data['content'] = crt.get('content',"")
+            data2['content'] = crt.get('content',"")
             data['comment'] = crt.get('comment',"")
             data['reference'] = crt.get('url','').split('/')[-1]
             data['posted_at'] = crt.get('published',"")
@@ -143,7 +147,10 @@ def gen_post():
                 data['posted_at'] = datetime.now()
             instance = Post(**data)
             instance.creation_id = create.id
+            instance2 = PostContent(**data2)
+            instance2.post_id = instance.id
             instance.save()
+            instance2.save()
             # pts = {i.reference:i for i in create.posts_no_content}
             # if pts.get(data['reference'], None) is not None:
             #     storage.get(Post, pts.get(data['reference'], None).id).delete()

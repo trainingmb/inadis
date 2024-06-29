@@ -8,6 +8,7 @@ from models import storage
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
+from models.post_content import PostContent
 from datetime import datetime
 
 
@@ -39,11 +40,12 @@ def create_post(creator_id, creation_id):
     form.post_creations.choices = [(creation_obj.id,creation_obj.name)]
     if request.method == 'POST':
         if form.validate_on_submit():
-            newpost_obj = Post(creation_id=creation_id, title=form.post_title.data,
-                                   content=form.post_content.data, comment=form.post_comment.data,
+            newpost_obj = Post(creation_id=creation_id, title=form.post_title.data, comment=form.post_comment.data,
                                    reference=form.post_reference.data, posted_at=form.post_posted_at.data,
                                    fetched_at=form.post_fetched_at.data)
             newpost_obj.save()
+            newpostcontent_obj = PostContent(post_id=newpost_obj.id, content=form.post_content.data)
+            newpostcontent_obj.save()
             return redirect(url_for('app_views.rud_post', creator_id=creator_id, creation_id=creation_obj.id, post_id=newpost_obj.id))
     
     form.post_creations.data = creation_obj.id
@@ -76,7 +78,6 @@ def rud_post(creator_id, creation_id, post_id):
     if request.method == 'POST':
         if form.validate_on_submit():
             post_obj.title = form.post_title.data
-            post_obj.content = form.post_content.data
             post_obj.comment = form.post_comment.data
             post_obj.reference = form.post_reference.data
             post_obj.posted_at = form.post_posted_at.data
@@ -84,16 +85,27 @@ def rud_post(creator_id, creation_id, post_id):
             if form.post_creations.data != creation_obj.id and form.post_creations.data in \
                 [i[0] for i in choices]:
                     post_obj.creation_id = form.post_creations.data
+            content = post_obj.get_content()
+            if content is None:
+                newpostcontent_obj = PostContent(post_id=post_obj.id, content = form.post_content.data)
+                newpostcontent_obj.save()
+            else:
+                content.content = form.post_content.data
+                content.save()
             post_obj.save()
     form.post_title.data = post_obj.title
-    form.post_content.data = post_obj.content
+    content = post_obj.get_content()
+    if content is None:
+        form.post_content.data = ""
+    else:
+        form.post_content.data = content.content
     form.post_comment.data = post_obj.comment
     form.post_reference.data = post_obj.reference
     form.post_posted_at.data = post_obj.posted_at
     form.post_fetched_at.data = post_obj.fetched_at
     form.post_creations.data = post_obj.creation_id
     form.submit.label.text = "Save Changes"
-    return render_template('user/post_view.html', creator_obj=creator_obj, creation=creation_obj, post=post_obj, form=form)
+    return render_template('user/post_view.html', creator_obj=creator_obj, creation=creation_obj, post=post_obj, content=post_obj.get_content(), form=form)
 
 @app_views.route('/creators/<creator_id>/creations/<creation_id>/posts/<post_id>/next', methods=['GET'])
 def get_next_post(creator_id, creation_id, post_id):

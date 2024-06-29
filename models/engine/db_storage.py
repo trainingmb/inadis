@@ -8,6 +8,7 @@ from models.base_model import BaseModel, Base
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
+from models.post_content import PostContent
 from os import getenv, path
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -15,10 +16,11 @@ from sqlalchemy.orm import defer
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 classes = {"Creator": Creator, "Creation": Creation,
-          "Post": Post}
+          "Post": Post, "PostContent": PostContent}
 class_tables = {"Creator": [ Creator.reference, Creator.name, Creator.link],
           "Creation": [ Creation.regexfilter, Creation.name, Creation.creator_id],
-          "Post": [ Post.creation_id, Post.title, Post.content, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]}
+          "Post": [ Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at],
+          "PostContent": [ PostContent.post_id, PostContent.content]}
 
 
 class DBStorage:
@@ -112,6 +114,18 @@ class DBStorage:
                 return value
 
         return None
+
+    def filtered_get(self, cls, **kwargs):
+        """
+        Returns the object based on the class name and its ID, or
+        None if not found
+        """
+        if cls not in classes.values():
+            return None
+        filtered_cls = self.__session.query(cls).filter_by(**kwargs).all()
+        if (len(filtered_cls) < 1):
+            return None
+        return filtered_cls
 
     def count(self, cls=None):
         """

@@ -35,39 +35,22 @@ class Creation(BaseModel, Base):
         @property
         def posts(self):
             """getter for list of posts related to the Creation"""
-            post_list = []
-            all_posts = models.storage.all(Post)
-            for post in all_posts.values():
-                if post.creation_id == self.id:
-                    post_list.append(post)
-            return post_list
-        @property
-        def posts_no_content(self):
-            """getter for list of posts related to the Creation"""
-            post_list = []
-            all_posts = models.storage.all(Post)
-            for post in all_posts.values():
-                if post.creation_id == self.id:
-                    post_list.append(post)
-            return sorted(post_list, key=lambda i:i.reference, reverse=True)
+            return models.storage.filtered_get(Post, creation_id = self.id)
         @property
         def creator(self):
             """getter for creator"""
             from models.creator import Creator
             crtor = models.storage.get(Creator, creator_id)
             return crtor
-    else:
-        @property
-        def posts_no_content(self):
-            """getter for list of posts related to the Creation"""
-            post_list = []
-            all_posts = models.storage.all_defer(Post, Post.content).values()
-            print(f"All posts for {self.name} are {len(all_posts)}")
-            for post in all_posts:
-                if post.creation_id == self.id:
-                    post_list.append(post)
-            print(f"Filtered posts for {self.name} are {len(post_list)}")
-            return sorted(post_list, key=lambda i:i.reference, reverse=True)
+
+    @property
+    def posts_no_content(self):
+        """getter for list of posts related to the Creation"""
+        all_posts = models.storage.filtered_get(Post, creation_id = self.id)
+        if all_posts is not None:
+            return sorted(all_posts, key=lambda i:i.reference, reverse=True)
+        return None
+
     @property
     def latest_post(self):
         p = self.posts_no_content

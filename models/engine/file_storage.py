@@ -8,10 +8,11 @@ import models
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
+from models.post_content import PostContent
 from hashlib import md5
 
 classes = {"Creator": Creator, "Creation": Creation,
-          "Post": Post}
+          "Post": Post, "PostContent":PostContent}
 
 
 class FileStorage:
@@ -91,6 +92,35 @@ class FileStorage:
                 return value
 
         return None
+
+    def filtered_get(self, cls, **kwargs):
+        """
+        Returns the object based on the class name and its ID, or
+        None if not found
+        """
+        if cls not in classes.values():
+            return None
+
+        all_cls = models.storage.all(cls)
+        filtered_results = []
+        for value in all_cls.values():
+            obj_flag = False
+            for key, v in kwargs.items():
+                try:
+                    x = getattr(value, key, None)
+                    if x is not None and x == v:
+                        obj_flag=True
+                    else:
+                        obj_flag=False
+                except Exception as e:
+                    obj_flag=False
+                if obj_flag == False:
+                    break
+            if obj_flag == True:
+                filtered_results.append(value)
+        if (len(filtered_results) < 1):
+            return None
+        return filtered_results 
 
     def count(self, cls=None):
         """
