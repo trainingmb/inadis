@@ -2,8 +2,8 @@
 """
 API Base for Creator based actions
 """
-from app.v1.views import app_views, jsonify, abort, redirect,request, render_template, url_for
-from app.v1.views import BaseCreatorForm
+from app.v2.views import app_views, jsonify, abort, redirect,request, render_template, url_for
+from app.v2.views import BaseCreatorForm
 from models import storage
 from models.creator import Creator
 from models.creation import Creation

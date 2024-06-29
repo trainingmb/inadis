@@ -22,6 +22,7 @@ class Creation(BaseModel, Base):
         posts = relationship("Post",
                               back_populates="creation",
                               cascade="all, delete, delete-orphan")
+        users_following = relationship('UserCreation', back_populates='creation')
     else:
         creator_id = ""
         regexfilter = ""
@@ -42,6 +43,12 @@ class Creation(BaseModel, Base):
             from models.creator import Creator
             crtor = models.storage.get(Creator, creator_id)
             return crtor
+        @property
+        def users_following(self):
+            """getter for list of UserCreation Relationship related to the Creation"""
+            from models.user_creation import UserCreation
+            return models.storage.filtered_get(UserCreation, creation_id = self.id)
+        
 
     @property
     def posts_no_content(self):

@@ -8,11 +8,13 @@ from models.base_model import BaseModel
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
+from models.post_content import PostContent
+from models.user import User
 import shlex  # for splitting the line along spaces except in double quotes
 
 
 classes = {"Creator": Creator, "Creation": Creation,
-          "Post": Post}
+          "Post": Post, "PostContent": PostContent, "User": User}
 fields = {"Creator": [['reference','int','Integer Reference for the Creator'],
                       ['name', 'str', 'Name of the Creator'],
                       ['link', 'str', 'Link to the Creators Page']],
@@ -21,11 +23,15 @@ fields = {"Creator": [['reference','int','Integer Reference for the Creator'],
                        ['name', 'str', 'Name of the Creation']],
           "Post": [['creation_id','str','ID of the Creation'],
                    ['title', 'str', 'Title of the Post'],
-                   ['content', 'str', 'Content of the post'],
                    ['comment', 'str', 'A comment on the post'],
                    ['reference','int','Integer Reference for the Post'],
                    ['posted_at', 'datetime', 'Timestamp of when the post was uploaded'],
-                   ['fetched_at', 'datetime', 'Timestamp of when the post was fetched']]}
+                   ['fetched_at', 'datetime', 'Timestamp of when the post was fetched']],
+          "PostContent": [['post_id', 'str', 'Unique Identifier for the relating post'],
+                          ['content', 'str', 'Content of the post usually very large text']]
+          "User": [['name', 'str', 'Name of the user'],
+                   ['email', 'str', 'User Email'],
+                   ['password', 'str', 'User password']]}
 
 class HBNBCommand(cmd.Cmd):
     """ INADIS console """

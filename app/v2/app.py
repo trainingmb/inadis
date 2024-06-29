@@ -2,7 +2,7 @@
 """Version 1 Flask App"""
 from flask import Flask, jsonify, render_template
 from models import storage
-from app.v1.views import app_views
+from app.v2.views import app_views
 from flask_cors import CORS
 from os import  path, curdir
 

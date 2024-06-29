@@ -9,6 +9,7 @@ from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
 from models.post_content import PostContent
+from models.user import User
 from os import getenv, path
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -16,11 +17,13 @@ from sqlalchemy.orm import defer
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 classes = {"Creator": Creator, "Creation": Creation,
-          "Post": Post, "PostContent": PostContent}
+          "Post": Post, "PostContent": PostContent, "User": User}
+
 class_tables = {"Creator": [ Creator.reference, Creator.name, Creator.link],
           "Creation": [ Creation.regexfilter, Creation.name, Creation.creator_id],
           "Post": [ Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at],
-          "PostContent": [ PostContent.post_id, PostContent.content]}
+          "PostContent": [ PostContent.post_id, PostContent.content],
+          "User": [ User.name, User.email, User.password]}
 
 
 class DBStorage:

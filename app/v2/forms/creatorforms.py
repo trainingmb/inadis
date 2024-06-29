@@ -2,7 +2,7 @@
 """
 Base for Creator Forms
 """
-from app.v1.forms import DataRequired, FlaskForm, IntegerField, Length, StringField, SubmitField
+from app.v2.forms import DataRequired, FlaskForm, IntegerField, Length, StringField, SubmitField
 
 class BaseCreatorForm(FlaskForm):
     """

@@ -5,7 +5,7 @@ from models.creator import Creator
 from models.creation import Creation
 from models.post_content import PostContent
 from models import storage
-from api.v1.views import api_views
+from api.v2.views import api_views
 from flask import abort, jsonify, make_response, request
 from datetime import datetime
 import dateutil.parser

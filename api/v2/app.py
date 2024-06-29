@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ Flask Application """
 from models import storage
-from api.v1.views import api_views
+from api.v2.views import api_views
 from os import environ
 from flask import Flask, render_template, make_response, jsonify
 from flask_cors import CORS
@@ -11,7 +11,7 @@ from flasgger.utils import swag_from
 app = Flask(__name__)
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 app.register_blueprint(api_views)
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+CORS(app, resources={r"/api/v2/*": {"origins": "*"}})
 
 
 @app.teardown_appcontext

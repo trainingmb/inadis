@@ -12,7 +12,7 @@ from models.post_content import PostContent
 from hashlib import md5
 
 classes = {"Creator": Creator, "Creation": Creation,
-          "Post": Post, "PostContent":PostContent}
+          "Post": Post, "PostContent": PostContent, "User": User}
 
 
 class FileStorage:

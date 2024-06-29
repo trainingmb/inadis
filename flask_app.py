@@ -3,16 +3,17 @@
 from os import environ, getcwd
 import sys    
 from models import storage
-from __init__ import create_app
-from flask import Flask, render_template, request, make_response, jsonify
+from models.user import User
+from __init__ import create_app, create_login_manager
+from flask import Flask, flash, jsonify, render_template, request, redirect, make_response, url_for
 from flask_cors import CORS
 from flasgger import Swagger
 from flasgger.utils import swag_from
 
 print("Current Working directory is ", getcwd())
 
-app = create_app('development', 'v1')
-CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+app = create_app('development', 'v2')
+CORS(app, resources={r"/api/v2/*": {"origins": "*"}})
 
 def wants_json_response():
     return request.accept_mimetypes['application/json'] >= \
@@ -66,12 +67,34 @@ def temporarily_unavailable(error):
         return make_response(jsonify({'error': "Temporarily Unavailable"}), 503)
     return render_template('errors/503.html', title="Temporarily Unavailable", wrapper="Temporarily Unavailable", err=error, error=True), 503
 
+##SWAGGER SETUP
 app.config['SWAGGER'] = {
     'title': 'A very Simple',
     'uiversion': 3
 }
 
 Swagger(app)
+
+
+##LOGIN MANAGER SETUP
+login_manager, CustomSessionInterface = create_login_manager()
+login_manager.login_view = 'app_views.loginUser'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return storage.get(User, user_id)
+    
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash("Unauthorized Access. You need to login.")
+    return redirect(url_for("app_views.loginUser"))
+
+
+
+app.session_interface = CustomSessionInterface()
+
+login_manager.init_app(app)
+
 
 
 @app.route('/')

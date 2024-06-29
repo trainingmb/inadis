@@ -2,7 +2,7 @@
 """
 Base for Post Forms
 """
-from app.v1.forms import DateTimeField, DataRequired, FlaskForm, IntegerField, Length, SelectField, StringField, SubmitField
+from app.v2.forms import DateTimeField, DataRequired, FlaskForm, IntegerField, Length, SelectField, StringField, SubmitField
 
 class BasePostForm(FlaskForm):
     """

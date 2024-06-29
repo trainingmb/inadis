@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-pip install flask flask_cors sqlalchemy mysqlclient python-dateutil flask-wft
+pip install flask flask_cors sqlalchemy mysqlclient python-dateutil flask-wft flask-login
 export TZ="Asia/Istanbul"
 export INADIS_MYSQL_USER=stofgenius
 export INADIS_MYSQL_HOST=stofgenius.mysql.pythonanywhere-services.com

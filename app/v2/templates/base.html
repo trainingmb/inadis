@@ -25,6 +25,18 @@
         {% block wrapper %}{% endblock %}
     </div>
 
+    <div class="">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class=flashes>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    </div>
+
     <div id="block-content-wrapper" class="content-wrapper">
       {% block content %}
       {% endblock %}

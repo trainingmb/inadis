@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+<!-- templates/user/userprofile.html -->
+
+{% block title%}
+Creation View
+{% endblock %}
+
+{% block wrapper%}
+<div align="centre">
+	<h1 class="display-4">
+		User Profile
+	</h1>
+</div>{% endblock %}
+
+{% block content %}
+<div id="user_profile_view" class='container post'>
+    <div class="user_details align-right">
+        <p>
+            <strong>Name</strong>:<br>{{user.name}}
+        </p>
+        <p>
+            <strong>Email</strong>:<br>{{user.email}}
+        </p>
+        <p>
+            <strong>API</strong>:<br>
+            {% if user.api_key is not none %}
+                <code>{{ user.api_key }}</code>
+                <a href="{{ url_for('app_views.user_deleteapi')}}">
+                <button id="delete_api_btn" type="button" class="btn btn-primary btn-sm  btn-danger">Delete API Key</button>
+                </a>
+                <a href="{{ url_for('app_views.user_genapi')}}">
+                <button id="gen_api_btn" type="button" class="btn btn-primary btn-sm  btn-warning">Regenerate API Key</button>
+                </a>
+            {% else %}
+                <code>{{ user.api_key }}</code>
+
+                <a href="{{ url_for('app_views.user_genapi')}}">
+                <button id="gen_api_btn" type="button" class="btn btn-primary btn-sm  btn-warning">Generate API Key</button>
+                </a>
+            {% endif %}
+        </p>
+    </div>
+</div>
+
+
+{% endblock %}

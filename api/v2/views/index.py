@@ -4,7 +4,7 @@ from models.creation import Creation
 from models.creator import Creator
 from models.post import Post
 from models import storage
-from api.v1.views import api_views
+from api.v2.views import api_views
 from flask import jsonify
 
 
