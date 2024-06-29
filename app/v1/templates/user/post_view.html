@@ -68,9 +68,41 @@ Creation View
         </p>
         <p>
             <strong>Content</strong>:<br>
+            <br>
+                <div class="pager">
+                        {% if creation.next_post(post.id) %}
+                        <a class="next next_post_button" href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=creation.next_post(post.id))}}">Next Post
+                        </a>
+                        {% else %}
+                        Next Post
+                        {% endif %}
+                        {% if creation.prev_post(post.id) %}
+                        <a class="previous prev_post_button" href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=creation.prev_post(post.id))}}">
+                        Previous Post</a>
+                        {% else %}
+                        Previous Post
+                        {% endif %}
+                </div>
+            <br>
             {% if content %}
                 <div id="content-section">{{content.content | safe }}</div>
             {% endif %}
+            <br>
+                <div class="pager">
+                        {% if creation.next_post(post.id) %}
+                        <a class="next next_post_button" href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=creation.next_post(post.id))}}">Next Post
+                        </a>
+                        {% else %}
+                        Next Post
+                        {% endif %}
+                        {% if creation.prev_post(post.id) %}
+                        <a class="previous prev_post_button" href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=creation.prev_post(post.id))}}">
+                        Previous Post</a>
+                        {% else %}
+                        Previous Post
+                        {% endif %}
+                </div>
+            <br>
         </p>
     </div>
     <div class="post_details_delete float-right">
