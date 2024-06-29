@@ -149,7 +149,7 @@ def gen_post():
             instance.creation_id = create.id
             instance2 = PostContent(**data2)
             instance2.post_id = instance.id
-            for post in create:
+            for post in create.posts:
                 if post.reference == data['reference']:
                     post.delete()
             instance.save()
