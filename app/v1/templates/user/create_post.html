@@ -3,29 +3,29 @@
 
 <!-- templates/user/create_post.html -->
 
-{% block title%}
-Add Post
+{% block title %} Add Post {% endblock %}
+
+{% block wrapper %}
+<div align="center"><h1 class="display-4">Add Post to <a href="{{url_for('app_views.rud_creator', creator_id=creator.id)}}">{{ creator.name }}</a> in <a href="{{url_for('app_views.rud_creation', creator_id=creator.id, creation_id=creation.id)}}">{{ creation.name }}</a></h1></div>
 {% endblock %}
 
-{% block wrapper%}<div align="centre"><h1 class="display-4">Add Post to <a href="{{url_for('app_views.rud_creator', creator_id=creator.id)}}">{{ creator.name }}</a> in <a href="{{url_for('app_views.rud_creation', creator_id=creator.id, creation_id=creation.id)}}">{{ creation.name }}</a></h1></div>{% endblock %}
 {% block content %}
 <div class="content-section">
 	{% include 'includes/_formerror.html' %}
-  <br/>
-  {% if form.csrf_token.errors %}
-    <div class="warning">You have submitted an invalid CSRF token</div>
-  {% endif %}
-  <br/>
-  <div class="table-responsive">
-    <br/>
-    <form action="{{url_for('app_views.create_post', creator_id=creator.id, creation_id=creation.id)}}" method="POST">
-    {{ form.csrf_token }}
-    {% for field in form if not field.name in ["csrf_token", 'post_posts', 'submit'] %}
-		<p>{{ field.label }}: {{ field }} <b>{{ " ".join(field.errors) }}</b></p>
-	{% endfor %}
-	    <p hidden='hidden'>{{ form.post_creations.label }}: {{ form.post_creations }} <b>{{ " ".join(form.post_creations.errors) }}</b></p>
-    {{form.submit}}
-    </form>
-  </div>
+	<br/>
+	{% if form.csrf_token.errors %}
+		<div class="alert alert-warning">You have submitted an invalid CSRF token</div>
+	{% endif %}
+	<br/>
+	<div class="table-responsive">
+		<form action="{{url_for('app_views.create_post', creator_id=creator.id, creation_id=creation.id)}}" method="POST">
+			{{ form.csrf_token }}
+			{% for field in form if not field.name in ["csrf_token", 'post_posts', 'submit'] %}
+				<p>{{ field.label }}: {{ field }} <b>{{ " ".join(field.errors) }}</b></p>
+			{% endfor %}
+			<p hidden='hidden'>{{ form.post_creations.label }}: {{ form.post_creations }} <b>{{ " ".join(form.post_creations.errors) }}</b></p>
+			{{form.submit}}
+		</form>
+	</div>
 </div>
 {% endblock %}
