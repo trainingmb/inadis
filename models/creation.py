@@ -40,7 +40,7 @@ class Creation(BaseModel, Base):
         def creator(self):
             """getter for creator"""
             from models.creator import Creator
-            crtor = models.storage.get(Creator, creator_id)
+            crtor = models.storage.get(Creator, self.creator_id)
             return crtor
 
     @property
@@ -48,7 +48,7 @@ class Creation(BaseModel, Base):
         """getter for list of posts related to the Creation"""
         all_posts = models.storage.filtered_get(Post, creation_id = self.id)
         if all_posts is not None:
-            return sorted(all_posts, key=lambda i:i.reference, reverse=True)
+            return sorted(all_posts, key=lambda i:i.reference)
         return None
 
     @property

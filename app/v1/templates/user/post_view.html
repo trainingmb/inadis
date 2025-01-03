@@ -9,10 +9,7 @@ Creation View
 {% block wrapper%}
 <div align="centre">
 	<h1 class="display-4">
-		Post {{post.title}} - 
-	<a href="{{url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}">
-		{{ post.creation.name }}
-	</a>
+		{{post.title}}
 	</h1>
 </div>{% endblock %}
 
@@ -20,6 +17,12 @@ Creation View
 {% include 'includes/_formerror.html' %}
 <div id="post_details_view" class='container post'>
     <div class="post_details align-right">
+        <p>
+            <strong>Creation Name</strong>:<br>
+            <a href="{{url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}">
+				{{ post.creation.name }}
+			</a>
+        </p>
         <p>
             <strong>Title</strong>:<br>{{post.title}}
         </p>
