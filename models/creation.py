@@ -57,7 +57,7 @@ class Creation(BaseModel, Base):
         if p == []:
             return None
         else:
-            return p[0]
+            return p[-1]
     def next_post(self, post_id=''):
         p = [i.id for i in self.posts_no_content]
         if p == [] or post_id == '':
