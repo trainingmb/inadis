@@ -1,31 +1,23 @@
 #!/usr/bin/python3
 """ holds class User"""
 
-import models
-from models.base_model import BaseModel, Base
+from .base_model import BaseModel
 from flask_login import UserMixin
 from secrets import token_hex
-import sqlalchemy
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
+from . import db
 
 
-class User(UserMixin, BaseModel, Base):
+class User(UserMixin, BaseModel):
     """Representation of a User"""
-    if models.storage_t == 'db':
-        __tablename__ = 'users'
-        email = Column(String(100), unique=True)
-        password = Column(String(100))
-        name = Column(String(128))
-        api_key = Column(String(16), unique=True, nullable=True)
-        following = relationship("UserCreation",
-                                   back_populates="user",
-                                   cascade="all, delete, delete-orphan")
-    else:
-        email = ""
-        password = ""
-        name = ""
-        api_key = ""
+    __tablename__ = 'users'
+    
+    email = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+    name = db.Column(db.String(128))
+    api_key = db.Column(db.String(16), unique=True, nullable=True)
+    
+    # Relationships
+    user_creations = db.relationship("UserCreation", backref="user", cascade="all, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
@@ -46,9 +38,13 @@ class User(UserMixin, BaseModel, Base):
         """
         self.api_key = None
 
-    if models.storage_t != "db":
     @property
     def following(self):
         """getter for list of UserCreation Relationship related to the User"""
-        from models.user_creation import UserCreation
-        return models.storage.filtered_get(UserCreation, user_id=self.id)
+        return self.user_creations
+
+
+# Add db.Model inheritance after the class is defined
+def add_db_model_inheritance():
+    from . import db
+    User.__bases__ = (UserMixin, BaseModel, db.Model)

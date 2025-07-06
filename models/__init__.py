@@ -3,21 +3,15 @@
 Initialize Models Package
 """
 
-from os import getenv, environ
+from flask_sqlalchemy import SQLAlchemy
 
-storage_t = getenv("INADIS_TYPE_STORAGE")
+# Initialize Flask-SQLAlchemy
+db = SQLAlchemy()
 
-if storage_t == "db":
-    from models.engine.mysqldb_storage import MySQLDBStorage
-    print("Working ON MySQLDB Storage")
-    storage = MySQLDBStorage()
-elif True:
-    storage_t = 'db'
-    from models.engine.sqlitedb_storage import SQLiteDBStorage
-    print("Working ON SQLiteDB Storage")
-    storage = SQLiteDBStorage()
-else:
-    from models.engine.file_storage import FileStorage
-    print("Working ON File Storage")
-    storage = FileStorage()
-storage.reload()
+# Import models in dependency order to avoid circular imports
+from .user import User
+from .creator import Creator
+from .creation import Creation
+from .post import Post
+from .post_content import PostContent
+from .user_creation import UserCreation

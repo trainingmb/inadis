@@ -3,8 +3,7 @@
 Index for V1 App
 """
 from app.v1.views import app_views, jsonify, render_template
-from models import storage
-from models.base_model import BaseModel, Base
+from models import db
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
@@ -24,7 +23,7 @@ def about():
     Return the JSON statistics
     for all classes
     """
-    cls = {'Creator': storage.count(Creator),
-           'Creation': storage.count(Creation),
-           'Posts': storage.count(Post)}
+    cls = {'Creator': Creator.query.count(),
+           'Creation': Creation.query.count(),
+           'Posts': Post.query.count()}
     return render_template("user/about.html", cls=cls)

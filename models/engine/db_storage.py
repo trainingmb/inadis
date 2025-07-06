@@ -3,12 +3,11 @@
 Contains the class DBStorage
 """
 
-import models
-from models.base_model import BaseModel, Base
-from models.creator import Creator
-from models.creation import Creation
-from models.post import Post
-from models.post_content import PostContent
+from ..base_model import BaseModel, Base
+from ..creator import Creator
+from ..creation import Creation
+from ..post import Post
+from ..post_content import PostContent
 from os import getenv, path
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -107,7 +106,7 @@ class DBStorage:
         """
         if cls not in classes.values():
             return None
-
+        from .. import models
         all_cls = models.storage.all(cls)
         for value in all_cls.values():
             if (value.id == id):
@@ -132,6 +131,7 @@ class DBStorage:
         count the number of objects in storage
         """
         all_class = classes.values()
+        from .. import models
 
         if not cls:
             count = 0

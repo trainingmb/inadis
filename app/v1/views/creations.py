@@ -4,7 +4,7 @@ API Base for Creations based actions
 """
 from app.v1.views import app_views, jsonify, abort, redirect,request, render_template, url_for
 from app.v1.views import BaseCreationForm
-from models import storage
+from models import db
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
@@ -14,7 +14,7 @@ def all_creations():
     """
     Returns a list of all creations
     """
-    creations = [i.to_dict() for i in storage.all(Creation).values()]
+    creations = [i.to_dict() for i in Creation.query.all()]
     return render_template('user/list_creations.html', creations = creations)
 
 @app_views.route('/creators/<creator_id>/newcreation', methods=['POST', 'GET'], strict_slashes=False)
@@ -22,7 +22,7 @@ def create_creation(creator_id):
     """
     Create a New Creation
     """
-    creator_obj = storage.get(Creator, creator_id)
+    creator_obj = Creator.query.get(creator_id)
     if creator_obj is None:
         abort(404, "Creator not Found")
     form = BaseCreationForm()
@@ -42,18 +42,17 @@ def rud_creation(creator_id, creation_id):
     Get/Modify/Delete creation with id <creation_id>
     if present else returns raises error 404
     """
-    creator_obj = storage.get(Creator, creator_id)
+    creator_obj = Creator.query.get(creator_id)
     if creator_obj is None:
         abort(404, "Creator not Found")
-    creation_obj = storage.get(Creation, creation_id)
+    creation_obj = Creation.query.get(creation_id)
     form = BaseCreationForm()
-    choices = [(cr.id, cr.name) for cr in storage.all(Creator).values()]
+    choices = [(cr.id, cr.name) for cr in Creator.query.all()]
     form.creation_creators.choices = choices
     if creation_obj is None or creation_obj.creator_id != creator_obj.id:
         abort(404, "Creation not Found")
     if '_method' in request.form.keys() and request.form['_method'] == 'DELETE':
         creation_obj.delete()
-        storage.save()
         return redirect(url_for('app_views.all_creations'))
     if '_method' in request.form.keys() and request.form['_method'] == 'CLEAN':
         posts=creation_obj.posts_no_content#[{'id':i.id, 'title':i.title, 'reference': i.reference} for i in sorted(, key=lambda i:(i.reference, i.fetched_at), reverse=True)]
@@ -62,8 +61,7 @@ def rud_creation(creator_id, creation_id):
                 print(c)
                 if posts[c]['reference'] == posts[c-1]['reference']:
                     print(posts[c]['reference'], posts[c]['title'])
-                    storage.get(Post, posts[c]['id']).delete()
-        storage.save()
+                    Post.query.get(posts[c]['id']).delete()
         return redirect(url_for('app_views.all_creations'))
     if request.method == 'POST':
         if form.validate_on_submit():

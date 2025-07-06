@@ -3,11 +3,7 @@
 
 import os
 from flask import Flask, render_template
-# from flask_sqlalchemy import SQLAlchemy
-# from flask_login import LoginManager
-# from flask_bootstrap import Bootstrap
-
-from app.config import app_config
+from .config import app_config
 import importlib
 
 #app = Flask(__name__, template_folder='templates', instance_relative_config=True)
@@ -15,7 +11,7 @@ import importlib
 print(u"Current path is", os.path.abspath(os.curdir), sep=' ')
 
 
-def create_app(config_name, version):
+def create_app(config_name = 'development', version = "v1"):
     """
     This is the method that initializes modules used in the app
     :param config_name: The key for the configuration to use
@@ -24,9 +20,17 @@ def create_app(config_name, version):
     if config_name not in app_config.keys():
         config_name = 'development'
 
-    app = importlib.import_module('app.' + version).app
-    app.config.from_object(".".join(["app", "config", app_config[config_name]]))
+    app_module = importlib.import_module('app.' + version)
+    app = app_module.app
+    
+    # Load configuration
+    config_class = getattr(importlib.import_module('app.config'), app_config[config_name])
+    app = app_module.init_app_with_config(config_class)
+    
     # use if you have instance/config.py with your SECRET_KEY and SQLALCHEMY_DATABASE_URI
-    app.config.from_pyfile('instance/config.py')
+    try:
+        app.config.from_pyfile('instance/config.py')
+    except FileNotFoundError:
+        pass
 
     return app

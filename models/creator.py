@@ -1,37 +1,19 @@
 #!/usr/bin/python3
 """ holds class Creator"""
 
-import models
-from models.base_model import BaseModel, Base
-from models.creation import Creation
-from os import getenv
-import sqlalchemy
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship
-from hashlib import md5
+from .base_model import BaseModel
+from . import db
 
 
-class Creator(BaseModel, Base):
+class Creator(BaseModel):
     """Representation of a creator """
-    if models.storage_t == 'db':
-        __tablename__ = 'creators'
-        reference = Column('reference', Integer, nullable=False)
-        name = Column('name', String(128), nullable=False)
-        link = Column('link', String(255), nullable=False)
-        creations = relationship("Creation",
-                              back_populates="creator",
-                              cascade="all, delete, delete-orphan")
-    else:
-        reference = 0
-        name = ""
-        link = ""
+    __tablename__ = 'creators'
+    
+    reference = db.Column('reference', db.Integer, nullable=False)
+    name = db.Column('name', db.String(128), nullable=False)
+    link = db.Column('link', db.String(255), nullable=False)
+    creations = db.relationship("Creation", backref="creator", cascade="all, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
         super().__init__(*args, **kwargs)
-
-    if models.storage_t != "db":
-        @property
-        def creations(self):
-            """getter for list of creations related to the creator"""
-            return models.storage.all(Creation).filtered_get(Creation, creator_id = self.id)
