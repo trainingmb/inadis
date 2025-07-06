@@ -1,52 +1,29 @@
 #!/usr/bin/python3
 """ holds class Creation"""
 
-import models
-from models.base_model import BaseModel, Base
-from models.post import Post
-from os import getenv
-import sqlalchemy
-from sqlalchemy import Column, String, ForeignKey
-from sqlalchemy.orm import relationship
-from hashlib import md5
+from .base_model import BaseModel
+from . import db
 
 
-class Creation(BaseModel, Base):
+class Creation(BaseModel):
     """Representation of a creation """
-    if models.storage_t == 'db':
-        __tablename__ = 'creations'
-        creator_id = Column('creatorid', String(60), ForeignKey('creators.id'), nullable=False)
-        creator = relationship('Creator', back_populates='creations')
-        regexfilter = Column('regexfilter', String(255))
-        name = Column('name', String(255), nullable=True)
-        posts = relationship("Post",
-                              back_populates="creation",
-                              cascade="all, delete, delete-orphan")
-    else:
-        creator_id = ""
-        regexfilter = ""
-        name = ""
+    __tablename__ = 'creations'
+    
+    creator_id = db.Column('creatorid', db.String(60), db.ForeignKey('creators.id'), nullable=False)
+    regexfilter = db.Column('regexfilter', db.String(255))
+    name = db.Column('name', db.String(255), nullable=True)
+    
+    # Relationships
+    posts = db.relationship("Post", backref="creation", cascade="all, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
         super().__init__(*args, **kwargs)
 
-    if models.storage_t != "db":
-        @property
-        def posts(self):
-            """getter for list of posts related to the Creation"""
-            return models.storage.filtered_get(Post, creation_id = self.id)
-        @property
-        def creator(self):
-            """getter for creator"""
-            from models.creator import Creator
-            crtor = models.storage.get(Creator, self.creator_id)
-            return crtor
-
     @property
     def posts_no_content(self):
         """getter for list of posts related to the Creation"""
-        all_posts = models.storage.filtered_get(Post, creation_id = self.id)
+        all_posts = self.posts
         if all_posts is not None:
             return sorted(all_posts, key=lambda i:i.reference)
         return None
@@ -58,6 +35,7 @@ class Creation(BaseModel, Base):
             return None
         else:
             return p[-1]
+            
     def next_post(self, post_id=''):
         p = [i.id for i in self.posts_no_content]
         if p == [] or post_id == '':
@@ -70,6 +48,7 @@ class Creation(BaseModel, Base):
             except ValueError:
                 return None
         return None
+        
     def prev_post(self, post_id=''):
         p = [i.id for i in self.posts_no_content]
         if p == [] or post_id == '':

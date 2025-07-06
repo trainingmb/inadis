@@ -1,15 +1,27 @@
 #!/usr/bin/python3
 """Version 1 Flask App"""
 from flask import Flask, jsonify, render_template
-from models import storage
+from flask_migrate import Migrate
+from models import db
 from app.v1.views import app_views
+from api.v1.views import api_views
 from flask_cors import CORS
 from os import  path, curdir
 
 print(u"Current path is", path.abspath(curdir), sep=' ')
 
 app = Flask(__name__, template_folder='templates')
+
+def init_app_with_config(config_object):
+    """Initialize the app with configuration"""
+    app.config.from_object(config_object)
+    # Initialize Flask-SQLAlchemy and Flask-Migrate
+    db.init_app(app)
+    migrate = Migrate(app, db)
+    return app
+
 app.register_blueprint(app_views)
+app.register_blueprint(api_views)
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 
@@ -49,6 +61,6 @@ def temporarily_unavailable(error):
 @app.teardown_appcontext
 def teardown_db(exception):
     """
-    Closes the storage on teardown
+    Closes the database session on teardown
     """
-    storage.close()
+    db.session.remove()

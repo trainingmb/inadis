@@ -4,7 +4,7 @@ from models.post import Post
 from models.creator import Creator
 from models.creation import Creation
 from models.post_content import PostContent
-from models import storage
+from models import db
 from api.v1.views import api_views
 from flask import abort, jsonify, make_response, request
 from datetime import datetime
@@ -25,10 +25,10 @@ def get_posts(creator_id, creation_id):
     of a specific Creation, or a specific post
     """
     list_posts = []
-    creator = storage.get(Creator, creator_id)
+    creator = Creator.query.get(creator_id)
     if not creator:
         abort(404, "Creator Not Found")
-    creation = storage.get(Creation, creation_id)
+    creation = Creation.query.get(creation_id)
     if not creation or creator.id != creation.creator_id:
         abort(404, "Creation Not Found")
     for post in creation.posts:
@@ -42,7 +42,7 @@ def get_post(post_id):
     """
     Retrieves a specific post based on id
     """
-    post = storage.get(Post, post_id)
+    post = Post.query.get(post_id)
     if not post:
         abort(404, "Post Not Found")
     return jsonify(post.to_dict())
@@ -54,12 +54,12 @@ def delete_post(post_id):
     """
     Deletes a post based on id provided
     """
-    post = storage.get(Post, post_id)
+    post = Post.query.get(post_id)
 
     if not post:
         abort(404, "Post Not Found")
-    storage.delete(post)
-    storage.save()
+    db.session.delete(post)
+    db.session.commit()
 
     return make_response(jsonify({}), 200)
 
@@ -71,10 +71,10 @@ def post_post(creator_id, creation_id):
     """
     Creates a Post
     """
-    creator = storage.get(Creator, creator_id)
+    creator = Creator.query.get(creator_id)
     if not creator:
         abort(404, "Creator Not Found")
-    creation = storage.get(Creation, creation_id)
+    creation = Creation.query.get(creation_id)
     if not creation or creator.id != creation.creator_id:
         abort(404, "Creation Not Found")
     crt = request.get_json()
@@ -104,16 +104,10 @@ def gen_post():
     crt = request.get_json()
     if not crt:
         abort(400, description="Not a JSON")
-    list_creations = []
     creator_reference = crt.get('url','').split('/')[-3]
     if not creator_reference.isnumeric():
         abort(400, "Creator Reference Invalid")
-    all_creators = storage.all(Creator).values()
-    creator = None
-    for cr in all_creators:
-        if cr.reference == int(creator_reference):
-            creator = cr
-            break
+    creator = Creator.query.filter_by(reference=int(creator_reference)).first()
     if creator is None:
         abort(404, "Creator Not Found")
     creations = creator.creations
@@ -163,9 +157,9 @@ def put_post(post_id):
     """
     Updates a Post
     """
-    post = storage.get(Post, post_id)
-    if not creation:
-        abort(404, "Creation Not Found")
+    post = Post.query.get(post_id)
+    if not post:
+        abort(404, "Post Not Found")
 
     data = request.get_json()
     if not data:
@@ -178,5 +172,5 @@ def put_post(post_id):
         if key not in ignore:
             if key in post_tp.keys() and type(value) == post_tp[key]:
                 setattr(post, key, value)
-    storage.save()
+    post.save()
     return make_response(jsonify(post.to_dict()), 200)

@@ -1,34 +1,24 @@
 #!/usr/bin/python3
 """ holds class Post"""
 
-import models
 from datetime import datetime
-from models.base_model import BaseModel, Base
-from os import getenv
-import sqlalchemy
-from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
-from hashlib import md5
+from .base_model import BaseModel
+from . import db
 
 
-class Post(BaseModel, Base):
+class Post(BaseModel):
     """Representation of a post"""
-    if models.storage_t == 'db':
-        __tablename__ = 'posts'
-        creation_id = Column('creationid', String(60), ForeignKey('creations.id'), nullable=False)
-        creation = relationship('Creation', back_populates='posts')
-        title = Column('title', String(255))
-        comment = Column('comment', String(255))
-        reference = Column('reference', Integer, nullable=False)
-        posted_at = Column(DateTime)
-        fetched_at = Column(DateTime)
-    else:
-        creation_id = ""
-        title = ""
-        comment = ""
-        reference = 0
-        posted_at = datetime.utcnow()
-        fetched_at = datetime.utcnow()
+    __tablename__ = 'posts'
+    
+    creation_id = db.Column('creationid', db.String(60), db.ForeignKey('creations.id'), nullable=False)
+    title = db.Column('title', db.String(255))
+    comment = db.Column('comment', db.String(255))
+    reference = db.Column('reference', db.Integer, nullable=False)
+    posted_at = db.Column(db.DateTime)
+    fetched_at = db.Column(db.DateTime)
+    
+    # Relationships
+    contents = db.relationship("PostContent", backref="post", cascade="all, delete-orphan")
 
     def __init__(self, *args, **kwargs):
         """initializes user"""
@@ -36,14 +26,13 @@ class Post(BaseModel, Base):
     
     def get_content(self):
         """getter for creation"""
-        from models.post_content import PostContent
-        crtion = models.storage.filtered_get(PostContent, post_id=self.id)
-        if crtion is not None and type(crtion) == list:
-            return crtion[-1]
-        return crtion
+        content = self.contents
+        if content is not None and len(content) > 0:
+            return content[-1]
+        return None
+        
     def has_content(self):
-        from models.post_content import PostContent
-        crtion = models.storage.filtered_get(PostContent, post_id=self.id)
-        if crtion is not None:
-            return true
-        return false
+        content = self.contents
+        if content is not None and len(content) > 0:
+            return True
+        return False

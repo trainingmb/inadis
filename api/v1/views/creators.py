@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ objects that handle all default RestFul API actions for Creator """
 from models.creator import Creator
-from models import storage
+from models import db
 from api.v1.views import api_views
 from flask import abort, jsonify, make_response, request
 from flasgger.utils import swag_from
@@ -14,7 +14,7 @@ def get_creators():
     Retrieves the list of all creator objects
     or a specific creator
     """
-    all_creators = storage.all(Creator).values()
+    all_creators = Creator.query.all()
     list_creators = []
     for creator in all_creators:
         list_creators.append(creator.to_dict())
@@ -27,7 +27,7 @@ def get_creator(creator_id):
     """
     Retrieves an creator
     """
-    creator = storage.get(Creator, creator_id)
+    creator = Creator.query.get(creator_id)
     if not creator:
         abort(404, "Creator Not Found")
 
@@ -41,13 +41,13 @@ def delete_creator(creator_id):
     """
     Deletes a creator Object
     """
-    creator = storage.get(Creator, creator_id)
+    creator = Creator.query.get(creator_id)
 
     if not creator:
         abort(404)
 
-    storage.delete(creator)
-    storage.save()
+    db.session.delete(creator)
+    db.session.commit()
 
     return make_response(jsonify({}), 200)
 
@@ -79,7 +79,7 @@ def put_creator(creator_id):
     """
     Updates a creator
     """
-    creator = storage.get(Creator, creator_id)
+    creator = Creator.query.get(creator_id)
 
     if not creator:
         abort(404)
@@ -93,5 +93,5 @@ def put_creator(creator_id):
     for key, value in data.items():
         if key not in ignore:
             setattr(creator, key, value)
-    storage.save()
+    creator.save()
     return make_response(jsonify(creator.to_dict()), 200)

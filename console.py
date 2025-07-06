@@ -4,7 +4,7 @@
 import cmd
 from datetime import datetime
 import models
-from models.base_model import BaseModel
+from .base_model import BaseModel
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post

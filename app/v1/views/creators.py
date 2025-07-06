@@ -4,7 +4,7 @@ API Base for Creator based actions
 """
 from app.v1.views import app_views, jsonify, abort, redirect,request, render_template, url_for
 from app.v1.views import BaseCreatorForm
-from models import storage
+from models import db
 from models.creator import Creator
 from models.creation import Creation
 
@@ -14,7 +14,7 @@ def all_creators():
     """
     Returns a list of all creators
     """
-    creators = [i.to_dict() for i in storage.all(Creator).values()]
+    creators = [i.to_dict() for i in Creator.query.all()]
     return render_template('user/list_creators.html', creators = creators)
 
 @app_views.route('/newcreator', methods=['POST', 'GET'], strict_slashes=False)
@@ -37,13 +37,12 @@ def rud_creator(creator_id):
     Get/Modify/Delete creator with id <creator_id>
     if present else returns raises error 404
     """
-    creator_obj = storage.get(Creator, creator_id)
+    creator_obj = Creator.query.get(creator_id)
     form = BaseCreatorForm()
     if creator_obj is None:
         abort(404, "Creator not Found")
     if '_method' in request.form.keys() and request.form['_method'] == 'DELETE':
         creator_obj.delete()
-        storage.save()
         return redirect(url_for('app_views.all_creators'))
     if request.method == 'POST':
         if form.validate_on_submit():

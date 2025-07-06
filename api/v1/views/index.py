@@ -3,7 +3,7 @@
 from models.creation import Creation
 from models.creator import Creator
 from models.post import Post
-from models import storage
+from models import db
 from api.v1.views import api_views
 from flask import jsonify
 
@@ -22,5 +22,5 @@ def number_objects():
 
     num_objs = {}
     for name, cl in classes.items():
-        num_objs[name] = storage.count(cl)
+        num_objs[name] = cl.query.count()
     return jsonify(num_objs)

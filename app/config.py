@@ -5,12 +5,14 @@
 Module containing the configurations for different environments
 """
 
+import os
 
 class Config(object):
     """Common configurations"""
     # Put any configurations common across all environments
     SESSION_COOKIE_NAME = "session"
     TESTING = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance', 'file.db')
 
 
 class DevelopmentConfig(Config):

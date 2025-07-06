@@ -2,8 +2,7 @@
 # A very simple Flask Hello World app for you to get started with...
 from os import environ, getcwd
 import sys    
-from models import storage
-from __init__ import create_app
+from app import create_app
 from flask import Flask, render_template, request, make_response, jsonify
 from flask_cors import CORS
 from flasgger import Swagger
@@ -21,7 +20,8 @@ def wants_json_response():
 @app.teardown_appcontext
 def close_db(error):
     """ Close Storage """
-    storage.close()
+    from models import db
+    db.session.remove()
 
 # noinspection PyUnresolvedReferences
 @app.errorhandler(403)

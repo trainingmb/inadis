@@ -4,7 +4,7 @@ API Base for Creations based actions
 """
 from app.v1.views import app_views, jsonify, abort, redirect,request, render_template, url_for
 from app.v1.views import BasePostForm
-from models import storage
+from models import db
 from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
@@ -18,10 +18,9 @@ def all_posts():
     Returns a list of all posts
     """
     all_creations = {}
-    for i in storage.all(Creation).values():
+    for i in Creation.query.all():
         all_creations[i.id] = i
-    all_posts = storage.all_select(Post, 
-                [Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at]).values()
+    all_posts = Post.query.with_entities(Post.id, Post.creation_id, Post.title, Post.comment, Post.reference, Post.posted_at, Post.fetched_at).all()
     posts=[i for i in sorted(all_posts, key=lambda i:(i.creation_id, i.reference))]
     return render_template('user/list_posts.html', posts=posts, creations=all_creations)
 
@@ -30,10 +29,10 @@ def create_post(creator_id, creation_id):
     """
     Create a New Post
     """
-    creator_obj = storage.get(Creator, creator_id)
+    creator_obj = Creator.query.get(creator_id)
     if creator_obj is None:
         abort(404, "Creator not Found")
-    creation_obj = storage.get(Creation, creation_id)
+    creation_obj = Creation.query.get(creation_id)
     if creation_obj is None or creation_obj.creator_id != creator_obj.id:
         abort(404, "Creation not Found")
     form = BasePostForm()
@@ -59,21 +58,20 @@ def rud_post(creator_id, creation_id, post_id):
     Get/Modify/Delete post with id <post_id>
     if present else returns raises error 404
     """
-    creator_obj = storage.get(Creator, creator_id)
+    creator_obj = Creator.query.get(creator_id)
     if creator_obj is None:
         abort(404, "Creator not Found")
-    creation_obj = storage.get(Creation, creation_id)
+    creation_obj = Creation.query.get(creation_id)
     if creation_obj is None or creation_obj.creator_id != creator_obj.id:
         abort(404, "Creation not Found")
-    post_obj = storage.get(Post, post_id)
+    post_obj = Post.query.get(post_id)
     if post_obj is None or creation_obj.id != post_obj.creation_id:
         abort(404, "Post not Found")
     form = BasePostForm()
-    choices = [(cr.id, cr.name) for cr in storage.all(Creation).values()]
+    choices = [(cr.id, cr.name) for cr in Creation.query.all()]
     form.post_creations.choices = choices
     if '_method' in request.form.keys() and request.form['_method'] == 'DELETE':
         post_obj.delete()
-        storage.save()
         return redirect(url_for('app_views.rud_creation', creator_id=creator_obj.id, creation_id=creation_obj.id))
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -112,13 +110,13 @@ def get_next_post(creator_id, creation_id, post_id):
     """
     Get Next Post
     """
-    creator_obj = storage.get(Creator, creator_id)
+    creator_obj = Creator.query.get(creator_id)
     if creator_obj is None:
         abort(404, "Creator not Found")
-    creation_obj = storage.get(Creation, creation_id)
+    creation_obj = Creation.query.get(creation_id)
     if creation_obj is None or creation_obj.creator_id != creator_obj.id:
         abort(404, "Creation not Found")
-    post_obj = storage.get(Post, post_id)
+    post_obj = Post.query.get(post_id)
     if post_obj is None or creation_obj.id != post_obj.creation_id:
         abort(404, "Post not Found")
     next_p = creator_obj.get_next_post(post_id)

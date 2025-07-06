@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """ Flask Application """
-from models import storage
+from models import db
 from api.v1.views import api_views
 from os import environ
 from flask import Flask, render_template, make_response, jsonify
@@ -17,7 +17,7 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 @app.teardown_appcontext
 def close_db(error):
     """ Close Storage """
-    storage.close()
+    db.session.remove()
 
 
 @app.errorhandler(404)
