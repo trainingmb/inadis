@@ -39,6 +39,10 @@ def login():
         if user:
             print(f"Password check result: {user.check_password(password)}")
             print(f"User password hash: {user.password}")
+            print(f"Input password: {password}")
+            # Test the password check manually
+            manual_check = check_password_hash(user.password, password)
+            print(f"Manual password check: {manual_check}")
         if user and user.check_password(password):
             print(f"Login successful for user: {user.username}")
             login_user(user)
