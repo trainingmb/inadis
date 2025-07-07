@@ -32,7 +32,10 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     from models import User
-    return User.query.get(user_id)
+    print(f"Loading user with ID: {user_id}, type: {type(user_id)}")
+    user = User.query.get(user_id)
+    print(f"Loaded user: {user}")
+    return user
 
 # noinspection PyUnresolvedReferences
 @app.errorhandler(403)

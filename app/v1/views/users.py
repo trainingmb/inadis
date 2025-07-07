@@ -33,8 +33,14 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        print(f"Login attempt for username: {username}")
         user = User.query.filter_by(username=username).first()
+        print(f"User found: {user}")
+        if user:
+            print(f"Password check result: {user.check_password(password)}")
+            print(f"User password hash: {user.password}")
         if user and user.check_password(password):
+            print(f"Login successful for user: {user.username}")
             login_user(user)
             return redirect(url_for('app_views.user_dashboard'))
         flash('Invalid username or password')
