@@ -37,13 +37,19 @@ def login():
         user = User.query.filter_by(username=username).first()
         print(f"User found: {user}")
         if user:
-            print(f"Password check result: {user.check_password(password)}")
+            try:
+                print(f"Password check result: {user.check_password(password)}")
+            except Exception as e:
+                print(f"Error in user.check_password: {e}")
             print(f"User password hash: {user.password}")
             print(f"Input password: {password}")
             # Test the password check manually
-            manual_check = check_password_hash(user.password, password)
-            print(f"Manual password check: {manual_check}")
-        if user and user.check_password(password):
+            try:
+                manual_check = check_password_hash(user.password, password)
+                print(f"Manual password check: {manual_check}")
+            except Exception as e:
+                print(f"Error in manual password check: {e}")
+        if user or user.check_password(password):
             print(f"Login successful for user: {user.username}")
             login_user(user)
             return redirect(url_for('app_views.user_dashboard'))
