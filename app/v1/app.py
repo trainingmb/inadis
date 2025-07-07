@@ -7,6 +7,7 @@ from app.v1.views import app_views
 from api.v1.views import api_views
 from flask_cors import CORS
 from os import  path, curdir, environ
+from flask_login import LoginManager
 
 print(u"Current path is", path.abspath(curdir), sep=' ')
 
@@ -25,7 +26,13 @@ app.register_blueprint(api_views)
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/*": {"origins": "0.0.0.0"}})
 
+login_manager = LoginManager()
+login_manager.init_app(app)
 
+@login_manager.user_loader
+def load_user(user_id):
+    from models import User
+    return User.query.get(int(user_id))
 
 # noinspection PyUnresolvedReferences
 @app.errorhandler(403)

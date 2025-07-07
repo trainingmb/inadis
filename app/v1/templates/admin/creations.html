@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Creations</h2>
+<a href="{{ url_for('app_views.admin_dashboard') }}">Back to Dashboard</a>
+<table>
+  <tr><th>ID</th><th>Title</th><th>Description</th><th>Actions</th></tr>
+  {% for creation in creations %}
+    <tr>
+      <td>{{ creation.id }}</td>
+      <td>{{ creation.title }}</td>
+      <td>{{ creation.description }}</td>
+      <td>
+        <a href="{{ url_for('app_views.admin_edit_creation', creation_id=creation.id) }}">Edit</a>
+        <form action="{{ url_for('app_views.admin_delete_creation', creation_id=creation.id) }}" method="post" style="display:inline;">
+          <button type="submit" onclick="return confirm('Delete creation?')">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+{% endblock %} 

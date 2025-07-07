@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Creator</h2>
+<form method="post">
+  Name: <input name="name" value="{{ creator.name }}"><br>
+  Link: <input name="link" value="{{ creator.link }}"><br>
+  <button type="submit">Save</button>
+</form>
+<a href="{{ url_for('app_views.admin_creators') }}">Back to Creators</a>
+{% endblock %} 

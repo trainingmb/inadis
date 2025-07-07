@@ -13,3 +13,4 @@ from app.v1.views.index import *
 from app.v1.views.creators import *
 from app.v1.views.creations import *
 from app.v1.views.posts import *
+from app.v1.views.admin import *

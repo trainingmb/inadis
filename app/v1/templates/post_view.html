@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ post.title }}</h2>
+<p>{{ post.content }}</p>
+{% if current_user.is_authenticated %}
+  <form method="post" action="{{ url_for('app_views.mark_post_read', post_id=post.id) }}">
+    <button type="submit" name="is_read" value="1" {% if is_read %}disabled{% endif %}>Mark as read</button>
+  </form>
+{% endif %}
+<div>
+  {% if prev_post_id %}
+    <a href="{{ url_for('app_views.post_view', post_id=prev_post_id) }}">Previous</a>
+  {% endif %}
+  {% if next_post_id %}
+    <a href="{{ url_for('app_views.post_view', post_id=next_post_id) }}">Next</a>
+  {% endif %}
+</div>
+{% endblock %} 

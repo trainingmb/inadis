@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>All Creators</h2>
+<ul>
+  {% for creator in creators %}
+    <li>
+      <a href="{{ url_for('app_views.creator_view', creator_id=creator.id) }}">{{ creator.name }}</a>
+      {% if current_user.is_authenticated %}
+        {% if creator in followed_creators %}
+          <form method="post" action="{{ url_for('app_views.unfollow_creator', creator_id=creator.id) }}" style="display:inline;">
+            <button type="submit">Unfollow</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('app_views.follow_creator', creator_id=creator.id) }}" style="display:inline;">
+            <button type="submit">Follow</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %} 

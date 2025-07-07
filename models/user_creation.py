@@ -17,4 +17,23 @@ class UserCreation(BaseModel):
 
     def __init__(self, *args, **kwargs):
         """initializes user-creation relationship"""
-        super().__init__(*args, **kwargs) 
+        super().__init__(*args, **kwargs)
+
+class UserFollowsCreator(db.Model):
+    __tablename__ = 'user_follows_creator'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    creator_id = db.Column(db.Integer, db.ForeignKey('creator.id'), primary_key=True)
+    followed_at = db.Column(db.DateTime, default=db.func.now())
+
+class UserFollowsCreation(db.Model):
+    __tablename__ = 'user_follows_creation'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    creation_id = db.Column(db.Integer, db.ForeignKey('creation.id'), primary_key=True)
+    followed_at = db.Column(db.DateTime, default=db.func.now())
+
+class UserPostProgress(db.Model):
+    __tablename__ = 'user_post_progress'
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), primary_key=True)
+    is_read = db.Column(db.Boolean, default=False)
+    read_at = db.Column(db.DateTime) 
