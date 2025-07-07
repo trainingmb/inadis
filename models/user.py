@@ -12,6 +12,8 @@ class User(UserMixin, BaseModel, db.Model):
     """Representation of a User"""
     __tablename__ = 'users'
     
+    id = db.Column(db.String(60), primary_key=True)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(128))

@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, send_file
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.v1.views import app_views
@@ -8,6 +8,8 @@ from models.creation import Creation
 from models.post import Post
 from models import db
 from models.user_creation import UserFollowsCreator, UserFollowsCreation, UserPostProgress
+import io
+from ebooklib import epub
 
 @app_views.route('/register', methods=['GET', 'POST'])
 def register():
@@ -109,7 +111,11 @@ def creation_view(creation_id):
     read_post_ids = set(
         p.post_id for p in UserPostProgress.query.filter_by(user_id=current_user.id, is_read=True).all()
     ) if current_user.is_authenticated else set()
-    return render_template('creation_view.html', creation=creation, posts=posts, read_post_ids=read_post_ids)
+    unread_posts = []
+    if current_user.is_authenticated:
+        unread_posts = [p for p in posts if p.id not in read_post_ids]
+    template = 'user/creation_view.html' if current_user.is_authenticated else 'creation_view.html'
+    return render_template(template, creation=creation, posts=posts, read_post_ids=read_post_ids, unread_posts=unread_posts)
 
 @app_views.route('/posts/<int:post_id>', methods=['GET', 'POST'])
 def post_view(post_id):
@@ -143,4 +149,60 @@ def mark_post_read(post_id):
     else:
         progress.is_read = True
     db.session.commit()
-    return redirect(request.referrer or url_for('app_views.post_view', post_id=post_id)) 
+    return redirect(request.referrer or url_for('app_views.post_view', post_id=post_id))
+
+@app_views.route('/export_epub', methods=['POST'])
+@login_required
+def export_epub():
+    post_ids = request.form.getlist('post_ids')
+    mark_as_read = 'mark_as_read' in request.form
+    if not post_ids:
+        flash('No posts selected for EPUB export.')
+        return redirect(request.referrer or url_for('app_views.user_dashboard'))
+    try:
+        # Fetch posts in the order provided by the user
+        posts = Post.query.filter(Post.id.in_(post_ids)).all()
+        post_map = {str(p.id): p for p in posts}
+        ordered_posts = [post_map[pid] for pid in post_ids if pid in post_map]
+        if not ordered_posts:
+            flash('Selected posts could not be found.')
+            return redirect(request.referrer or url_for('app_views.user_dashboard'))
+        # Create EPUB
+        book = epub.EpubBook()
+        book.set_identifier(f"creation-{ordered_posts[0].creation_id if ordered_posts else 'unknown'}")
+        book.set_title(f"EPUB Export - {ordered_posts[0].creation.title if ordered_posts else 'Selection'}")
+        book.set_language('en')
+        book.add_author(current_user.username)
+        chapters = []
+        for idx, post in enumerate(ordered_posts, 1):
+            c = epub.EpubHtml(title=post.title, file_name=f'chap_{idx}.xhtml', lang='en')
+            c.content = f'<h2>{post.title}</h2><div>{post.content}</div>'
+            book.add_item(c)
+            chapters.append(c)
+        book.toc = chapters
+        book.spine = ['nav'] + chapters
+        book.add_item(epub.EpubNcx())
+        book.add_item(epub.EpubNav())
+        # Write to memory
+        buf = io.BytesIO()
+        epub.write_epub(buf, book)
+        buf.seek(0)
+        # Mark as read if requested
+        if mark_as_read:
+            try:
+                for post in ordered_posts:
+                    progress = UserPostProgress.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+                    if not progress:
+                        progress = UserPostProgress(user_id=current_user.id, post_id=post.id, is_read=True)
+                        db.session.add(progress)
+                    else:
+                        progress.is_read = True
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Error marking posts as read: {e}')
+        filename = f"creation_{ordered_posts[0].creation_id if ordered_posts else 'export'}.epub"
+        return send_file(buf, as_attachment=True, download_name=filename, mimetype='application/epub+zip')
+    except Exception as e:
+        flash(f'Error generating EPUB: {e}')
+        return redirect(request.referrer or url_for('app_views.user_dashboard')) 

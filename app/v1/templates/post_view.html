@@ -1,18 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ post.title }}</h2>
-<p>{{ post.content }}</p>
-{% if current_user.is_authenticated %}
-  <form method="post" action="{{ url_for('app_views.mark_post_read', post_id=post.id) }}">
-    <button type="submit" name="is_read" value="1" {% if is_read %}disabled{% endif %}>Mark as read</button>
-  </form>
-{% endif %}
-<div>
-  {% if prev_post_id %}
-    <a href="{{ url_for('app_views.post_view', post_id=prev_post_id) }}">Previous</a>
-  {% endif %}
-  {% if next_post_id %}
-    <a href="{{ url_for('app_views.post_view', post_id=next_post_id) }}">Next</a>
-  {% endif %}
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h2 class="mb-0">{{ post.title }}</h2>
+      {% if current_user.is_authenticated %}
+        <form method="post" action="{{ url_for('app_views.mark_post_read', post_id=post.id) }}" class="mb-0">
+          <button type="submit" class="btn btn-sm btn-success" name="is_read" value="1" {% if is_read %}disabled{% endif %}>
+            {% if is_read %}Read{% else %}Mark as read{% endif %}
+          </button>
+        </form>
+      {% endif %}
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ post.content }}</p>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+      <div>
+        {% if prev_post_id %}
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('app_views.post_view', post_id=prev_post_id) }}">Previous</a>
+        {% endif %}
+        {% if next_post_id %}
+          <a class="btn btn-outline-primary btn-sm" href="{{ url_for('app_views.post_view', post_id=next_post_id) }}">Next</a>
+        {% endif %}
+      </div>
+      <a class="btn btn-link btn-sm" href="{{ url_for('app_views.list_posts') }}">Back to Posts</a>
+    </div>
+  </div>
 </div>
 {% endblock %} 
