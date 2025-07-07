@@ -22,11 +22,11 @@ def create_app(config_name = 'development', version = "v1"):
 
     app_module = importlib.import_module('app.' + version)
     app = app_module.app
-    
+
     # Load configuration
     config_class = getattr(importlib.import_module('app.config'), app_config[config_name])
     app = app_module.init_app_with_config(config_class)
-    
+
     # use if you have instance/config.py with your SECRET_KEY and SQLALCHEMY_DATABASE_URI
     try:
         app.config.from_pyfile('instance/config.py')

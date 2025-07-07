@@ -6,7 +6,7 @@ from models import db
 from app.v1.views import app_views
 from api.v1.views import api_views
 from flask_cors import CORS
-from os import  path, curdir
+from os import  path, curdir, environ
 
 print(u"Current path is", path.abspath(curdir), sep=' ')
 

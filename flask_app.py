@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # A very simple Flask Hello World app for you to get started with...
 from os import environ, getcwd
-import sys    
+import sys
 from app import create_app
 from flask import Flask, render_template, request, make_response, jsonify
 from flask_cors import CORS
@@ -76,4 +76,13 @@ Swagger(app)
 
 @app.route('/')
 def hello_world():
-    return 'Hello from Flask!'
+    from models import db
+    return str(db)
+
+@app.route('/environ/<s>')
+def get_environ(s):
+    if s is not None and len(s) > 0:
+        return str(environ.get(s))
+    else:
+        return str(environ)
+
