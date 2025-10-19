@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ creation.title }}</h2>
+<p>{{ creation.description }}</p>
+<ul>
+  {% for post in posts %}
+    <li>
+      <a href="{{ url_for('app_views.post_view', post_id=post.id) }}">{{ post.title }}</a>
+      {% if current_user.is_authenticated %}
+        <form method="post" action="{{ url_for('app_views.mark_post_read', post_id=post.id) }}" style="display:inline;">
+          <input type="checkbox" name="is_read" value="1" {% if post.id in read_post_ids %}checked{% endif %} onchange="this.form.submit();">
+          Mark as read
+        </form>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %} 

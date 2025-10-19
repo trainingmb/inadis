@@ -7,6 +7,7 @@ from app.v1.views import BaseCreatorForm
 from models import db
 from models.creator import Creator
 from models.creation import Creation
+from app.utils.decorators import admin_required
 
 
 @app_views.route('/creators', methods=['GET'], strict_slashes=False)
@@ -18,6 +19,7 @@ def all_creators():
     return render_template('user/list_creators.html', creators = creators)
 
 @app_views.route('/newcreator', methods=['POST', 'GET'], strict_slashes=False)
+@admin_required
 def create_creator():
     """
     Create a New Creator

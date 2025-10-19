@@ -76,6 +76,55 @@ Creation View
 	<a href="{{ url_for('app_views.create_post', creator_id=creation.creator_id, creation_id=creation.id )}}"> Add Post </a>
 	</div>
 </div>
+<!-- Unread Posts EPUB Export Section -->
+{% if current_user.is_authenticated and unread_posts %}
+<div id="unread_epub_section" class="mt-4">
+  <h5>Select Unread Posts to Export as EPUB</h5>
+  <form id="epub_export_form" method="post" action="{{ url_for('app_views.export_epub') }}">
+    <div class="mb-2">
+      <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(true)">Select All</button>
+      <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(false)">Deselect All</button>
+    </div>
+    <ul id="unread_posts_list" class="list-group mb-2">
+      {% for post in unread_posts %}
+      <li class="list-group-item d-flex align-items-center" draggable="true">
+        <input type="checkbox" name="post_ids" value="{{ post.id }}" class="mr-2" checked>
+        <span class="post-title">{{ post.title }}</span>
+        <span class="ml-auto text-muted small">{{ post.fetched_at }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="form-check mb-2">
+      <input class="form-check-input" type="checkbox" name="mark_as_read" id="mark_as_read">
+      <label class="form-check-label" for="mark_as_read">Mark selected posts as read after export</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Generate EPUB</button>
+  </form>
+  <small class="text-muted">Drag to reorder posts before exporting.</small>
+</div>
+<script>
+function selectAllUnread(val) {
+  document.querySelectorAll('#unread_posts_list input[type="checkbox"]').forEach(cb => cb.checked = val);
+}
+// Simple drag-and-drop reordering
+const list = document.getElementById('unread_posts_list');
+let dragSrcEl = null;
+list.addEventListener('dragstart', function(e) {
+  dragSrcEl = e.target;
+  e.dataTransfer.effectAllowed = 'move';
+});
+list.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+});
+list.addEventListener('drop', function(e) {
+  e.preventDefault();
+  if (e.target.tagName === 'LI' && dragSrcEl !== e.target) {
+    list.insertBefore(dragSrcEl, e.target.nextSibling);
+  }
+});
+</script>
+{% endif %}
 	</br>
 
 

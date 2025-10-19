@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Edit Post</h2>
+<form method="post">
+  Title: <input name="title" value="{{ post.title }}"><br>
+  Content: <textarea name="content">{{ post.content }}</textarea><br>
+  <button type="submit">Save</button>
+</form>
+<a href="{{ url_for('app_views.admin_posts') }}">Back to Posts</a>
+{% endblock %} 

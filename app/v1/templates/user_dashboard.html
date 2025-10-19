@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>My Dashboard</h2>
+<h3>Followed Creators</h3>
+<ul>
+  {% for creator in followed_creators %}
+    <li><a href="{{ url_for('app_views.creator_view', creator_id=creator.id) }}">{{ creator.name }}</a></li>
+  {% endfor %}
+</ul>
+<h3>Followed Creations</h3>
+<ul>
+  {% for creation in followed_creations %}
+    <li><a href="{{ url_for('app_views.creation_view', creation_id=creation.id) }}">{{ creation.title }}</a></li>
+  {% endfor %}
+</ul>
+<h3>Progress</h3>
+<ul>
+  {% for progress in post_progress %}
+    <li>
+      <a href="{{ url_for('app_views.post_view', post_id=progress.post_id) }}">Post {{ progress.post_id }}</a>
+      - {{ 'Read' if progress.is_read else 'Unread' }}
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %} 

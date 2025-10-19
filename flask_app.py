@@ -78,11 +78,3 @@ Swagger(app)
 def hello_world():
     from models import db
     return str(db)
-
-@app.route('/environ/<s>')
-def get_environ(s):
-    if s is not None and len(s) > 0:
-        return str(environ.get(s))
-    else:
-        return str(environ)
-

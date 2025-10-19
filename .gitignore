@@ -10,3 +10,4 @@ app/v1/instance/config.py
 file.db.1
 /migrations/*
 *.bat
+instance/db.config
