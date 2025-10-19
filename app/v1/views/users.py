@@ -259,7 +259,10 @@ def export_unread_followed():
                 chapters = []
                 for idx, post in enumerate(unread, 1):
                     c = epub.EpubHtml(title=post.title, file_name=f'chap_{idx}.xhtml', lang='en')
-                    c.content = f'<h2>{post.title}</h2><div>{post.content}</div>'
+                    # prefer PostContent via get_content(); fall back to empty string
+                    content_obj = post.get_content() if hasattr(post, 'get_content') else None
+                    body = content_obj.content if content_obj is not None else ''
+                    c.content = f'<h2>{post.title}</h2><div>{body}</div>'
                     book.add_item(c)
                     chapters.append(c)
                 book.toc = chapters
@@ -317,7 +320,9 @@ def export_creation_range(creation_id):
         chapters = []
         for idx, post in enumerate(selected, 1):
             c = epub.EpubHtml(title=post.title, file_name=f'chap_{idx}.xhtml', lang='en')
-            c.content = f'<h2>{post.title}</h2><div>{post.content}</div>'
+            content_obj = post.get_content() if hasattr(post, 'get_content') else None
+            body = content_obj.content if content_obj is not None else ''
+            c.content = f'<h2>{post.title}</h2><div>{body}</div>'
             book.add_item(c)
             chapters.append(c)
         book.toc = chapters
@@ -419,7 +424,9 @@ def export_since_last_read(creation_id):
         chapters = []
         for idx, post in enumerate(to_export, 1):
             c = epub.EpubHtml(title=post.title, file_name=f'chap_{idx}.xhtml', lang='en')
-            c.content = f'<h2>{post.title}</h2><div>{post.content}</div>'
+            content_obj = post.get_content() if hasattr(post, 'get_content') else None
+            body = content_obj.content if content_obj is not None else ''
+            c.content = f'<h2>{post.title}</h2><div>{body}</div>'
             book.add_item(c)
             chapters.append(c)
         book.toc = chapters
@@ -474,13 +481,15 @@ def export_epub():
         # Create EPUB
         book = epub.EpubBook()
         book.set_identifier(f"creation-{ordered_posts[0].creation_id if ordered_posts else 'unknown'}")
-        book.set_title(f"EPUB Export - {ordered_posts[0].creation.title if ordered_posts else 'Selection'}")
+    book.set_title(f"EPUB Export - {ordered_posts[0].creation.name if ordered_posts else 'Selection'}")
         book.set_language('en')
         book.add_author(current_user.username)
         chapters = []
         for idx, post in enumerate(ordered_posts, 1):
             c = epub.EpubHtml(title=post.title, file_name=f'chap_{idx}.xhtml', lang='en')
-            c.content = f'<h2>{post.title}</h2><div>{post.content}</div>'
+            content_obj = post.get_content() if hasattr(post, 'get_content') else None
+            body = content_obj.content if content_obj is not None else ''
+            c.content = f'<h2>{post.title}</h2><div>{body}</div>'
             book.add_item(c)
             chapters.append(c)
         book.toc = chapters
