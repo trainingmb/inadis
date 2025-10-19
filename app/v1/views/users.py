@@ -92,7 +92,7 @@ def list_creations():
     followed_creations = [fc.creation for fc in current_user.followed_creations] if current_user.is_authenticated else []
     return render_template('list_creations.html', creations=creations, followed_creations=followed_creations)
 
-@app_views.route('/creations/<int:creation_id>/follow', methods=['POST'])
+@app_views.route('/creations/<creation_id>/follow', methods=['POST'])
 @login_required
 def follow_creation(creation_id):
     if not UserFollowsCreation.query.filter_by(user_id=current_user.id, creation_id=creation_id).first():
@@ -100,7 +100,7 @@ def follow_creation(creation_id):
         db.session.commit()
     return redirect(url_for('app_views.list_creations'))
 
-@app_views.route('/creations/<int:creation_id>/unfollow', methods=['POST'])
+@app_views.route('/creations/<creation_id>/unfollow', methods=['POST'])
 @login_required
 def unfollow_creation(creation_id):
     rel = UserFollowsCreation.query.filter_by(user_id=current_user.id, creation_id=creation_id).first()
@@ -109,7 +109,7 @@ def unfollow_creation(creation_id):
         db.session.commit()
     return redirect(url_for('app_views.list_creations'))
 
-@app_views.route('/creations/<int:creation_id>')
+@app_views.route('/creations/<creation_id>')
 def creation_view(creation_id):
     creation = Creation.query.get_or_404(creation_id)
     posts = Post.query.filter_by(creation_id=creation_id).all()
@@ -226,7 +226,7 @@ def export_unread_followed():
         return redirect(url_for('app_views.user_dashboard'))
 
 
-@app_views.route('/creations/<int:creation_id>/export_range', methods=['POST'])
+@app_views.route('/creations/<creation_id>/export_range', methods=['POST'])
 @login_required
 def export_creation_range(creation_id):
     """Export a range of posts for a given creation. Expects 'start_ref' and 'end_ref' in form.
@@ -279,7 +279,7 @@ def export_creation_range(creation_id):
         return redirect(request.referrer or url_for('app_views.creation_view', creation_id=creation_id))
 
 
-@app_views.route('/creations/<int:creation_id>/continue')
+@app_views.route('/creations/<creation_id>/continue')
 @login_required
 def continue_creation(creation_id):
     """Redirect the user to the next unread post in a creation.
