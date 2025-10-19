@@ -51,17 +51,18 @@ Creation View
         	</br>
     </div>
 </div>
+{% if form %}
 <div id="creation_details_edit" class='container creation'>
     <form action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">
-    	<table>
+     	<table>
     		<tbody>
                 {{ form.csrf_token }}
                 {% for field in form if not field.name in ["csrf_token", 'submit'] %}
-            		<tr>
+            	<tr>
                 		<td>{{ field.label }}</td>
                 		<td>{{ field }}</td>
                 		</td><b>{{ " ".join(field.errors) }}</b></td>
-            		</tr>
+            	</tr>
             	{% endfor %}
                 <tr>
                     <td>{{form.submit}}</td>
@@ -69,10 +70,11 @@ Creation View
         		<tr>
         		    <td><button id="cancel_change_btn"class="btn btn-primary btn-sm btn-warning"> Cancel </button></td>
         	    </tr>
-    		</tbody>
-    	</table>
+        	</tbody>
+        	</table>
     </form>
 </div>
+{% endif %}
 <div id="posts_in_creation">
 	<h4 class="h4"> <a href=""> Posts </a> </h4> </br>
 	<div class="well card card-body bg-light">
