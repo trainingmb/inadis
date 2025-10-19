@@ -36,7 +36,7 @@ def admin_users():
     users = User.query.all()
     return render_template('admin/users.html', users=users)
 
-@app_views.route('/admin/users/<int:user_id>/edit', methods=['GET', 'POST'])
+@app_views.route('/admin/users/<string:user_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -49,7 +49,7 @@ def admin_edit_user(user_id):
         return redirect(url_for('app_views.admin_users'))
     return render_template('admin/edit_user.html', user=user)
 
-@app_views.route('/admin/users/<int:user_id>/delete', methods=['POST'])
+@app_views.route('/admin/users/<string:user_id>/delete', methods=['POST'])
 @admin_required
 def admin_delete_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -121,7 +121,7 @@ def admin_posts():
     posts = Post.query.all()
     return render_template('admin/posts.html', posts=posts)
 
-@app_views.route('/admin/posts/<int:post_id>/edit', methods=['GET', 'POST'])
+@app_views.route('/admin/posts/<string:post_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_post(post_id):
     post = Post.query.get_or_404(post_id)
@@ -133,7 +133,7 @@ def admin_edit_post(post_id):
         return redirect(url_for('app_views.admin_posts'))
     return render_template('admin/edit_post.html', post=post)
 
-@app_views.route('/admin/posts/<int:post_id>/delete', methods=['POST'])
+@app_views.route('/admin/posts/<string:post_id>/delete', methods=['POST'])
 @admin_required
 def admin_delete_post(post_id):
     post = Post.query.get_or_404(post_id)

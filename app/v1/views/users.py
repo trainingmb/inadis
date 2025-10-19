@@ -125,7 +125,7 @@ def creation_view(creation_id):
     template = 'user/creation_view.html' if current_user.is_authenticated else 'creation_view.html'
     return render_template(template, creation=creation, posts=posts, read_post_ids=read_post_ids, unread_posts=unread_posts)
 
-@app_views.route('/posts/<int:post_id>', methods=['GET', 'POST'])
+@app_views.route('/posts/<string:post_id>', methods=['GET', 'POST'])
 def post_view(post_id):
     post = Post.query.get_or_404(post_id)
     creation = Creation.query.get(post.creation_id)
@@ -147,7 +147,7 @@ def post_view(post_id):
             is_read = True
     return render_template('post_view.html', post=post, creation=creation, prev_post_id=prev_post_id, next_post_id=next_post_id, is_read=is_read)
 
-@app_views.route('/posts/<int:post_id>/mark_read', methods=['POST'])
+@app_views.route('/posts/<string:post_id>/mark_read', methods=['POST'])
 @login_required
 def mark_post_read(post_id):
     progress = UserPostProgress.query.filter_by(user_id=current_user.id, post_id=post_id).first()
