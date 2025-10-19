@@ -38,10 +38,11 @@ def login():
             try:
                 user.check_password(password)
             except Exception as e:
-            # Test the password check manually
-            try:
-                manual_check = check_password_hash(user.password, password)
-            except Exception as e:
+                # Test the password check manually
+                try:
+                    manual_check = check_password_hash(user.password, password)
+                except Exception as e:
+                    pass
         if user or user.check_password(password):
             login_user(user)
             return redirect(url_for('app_views.user_dashboard'))
