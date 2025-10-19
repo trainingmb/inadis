@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, send_file
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.v1.views import app_views
+from app.v1.views import app_views, BasePostForm
 from models.user import User
 from models.creator import Creator
 from models.creation import Creation
@@ -112,7 +112,8 @@ def unfollow_creation(creation_id):
 @app_views.route('/creations/<creation_id>')
 def creation_view(creation_id):
     creation = Creation.query.get_or_404(creation_id)
-    posts = Post.query.filter_by(creation_id=creation_id).all()
+    # Use the Creation property which returns posts sorted by reference
+    posts = creation.posts_no_content or []
     read_post_ids = set(
         p.post_id for p in UserPostProgress.query.filter_by(user_id=current_user.id, is_read=True).all()
     ) if current_user.is_authenticated else set()
@@ -127,7 +128,8 @@ def creation_view(creation_id):
 def post_view(post_id):
     post = Post.query.get_or_404(post_id)
     creation = Creation.query.get(post.creation_id)
-    posts = Post.query.filter_by(creation_id=creation.id).order_by(Post.id).all()
+    # Order posts by their reference number for consistent navigation
+    posts = Post.query.filter_by(creation_id=creation.id).order_by(Post.reference).all()
     idx = [p.id for p in posts].index(post.id)
     prev_post_id = posts[idx-1].id if idx > 0 else None
     next_post_id = posts[idx+1].id if idx < len(posts)-1 else None
@@ -149,7 +151,17 @@ def post_view(post_id):
                 db.session.rollback()
             
             is_read = True
-    return render_template('post_view.html', post=post, creation=creation, prev_post_id=prev_post_id, next_post_id=next_post_id, is_read=is_read)
+    # provide an edit form to the template (prefilled) so templates expecting 'form' won't error
+    try:
+        form = BasePostForm()
+        form.post_title.data = post.title
+        # note: post content may be in PostContent - setting post_content as a string preview
+        form.post_content.data = getattr(post, 'content', '')
+        form.post_reference.data = post.reference
+        form.post_fetched_at.data = post.fetched_at
+    except Exception:
+        form = None
+    return render_template('post_view.html', post=post, creation=creation, prev_post_id=prev_post_id, next_post_id=next_post_id, is_read=is_read, form=form)
 
 @app_views.route('/posts/<string:post_id>/mark_read', methods=['POST'])
 @login_required
