@@ -65,7 +65,7 @@ def admin_creators():
     creators = Creator.query.all()
     return render_template('admin/creators.html', creators=creators)
 
-@app_views.route('/admin/creators/<int:creator_id>/edit', methods=['GET', 'POST'])
+@app_views.route('/admin/creators/<string:creator_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_creator(creator_id):
     creator = Creator.query.get_or_404(creator_id)
@@ -77,7 +77,7 @@ def admin_edit_creator(creator_id):
         return redirect(url_for('app_views.admin_creators'))
     return render_template('admin/edit_creator.html', creator=creator)
 
-@app_views.route('/admin/creators/<int:creator_id>/delete', methods=['POST'])
+@app_views.route('/admin/creators/<string:creator_id>/delete', methods=['POST'])
 @admin_required
 def admin_delete_creator(creator_id):
     creator = Creator.query.get_or_404(creator_id)

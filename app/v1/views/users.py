@@ -72,7 +72,7 @@ def list_creators():
     followed_creators = [fc.creator for fc in current_user.followed_creators] if current_user.is_authenticated else []
     return render_template('list_creators.html', creators=creators, followed_creators=followed_creators)
 
-@app_views.route('/creators/<int:creator_id>/follow', methods=['POST'])
+@app_views.route('/creators/<string:creator_id>/follow', methods=['POST'])
 @login_required
 def follow_creator(creator_id):
     if not UserFollowsCreator.query.filter_by(user_id=current_user.id, creator_id=creator_id).first():
@@ -80,7 +80,7 @@ def follow_creator(creator_id):
         db.session.commit()
     return redirect(url_for('app_views.list_creators'))
 
-@app_views.route('/creators/<int:creator_id>/unfollow', methods=['POST'])
+@app_views.route('/creators/<string:creator_id>/unfollow', methods=['POST'])
 @login_required
 def unfollow_creator(creator_id):
     rel = UserFollowsCreator.query.filter_by(user_id=current_user.id, creator_id=creator_id).first()
