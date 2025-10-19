@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Followed Creations</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Creation</th>
+      <th>Most Recently Read</th>
+      <th>Posts Since</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td><a href="{{ url_for('app_views.creation_view', creation_id=row.creation.id) }}">{{ row.creation.name }}</a></td>
+      <td>
+        {% if row.last_post %}
+          <a href="{{ url_for('app_views.post_view', post_id=row.last_post.id) }}">{{ row.last_post.title }}</a>
+        {% else %}
+          (none)
+        {% endif %}
+      </td>
+      <td>{{ row.posts_since }}</td>
+      <td>
+        <form method="post" action="{{ url_for('app_views.unfollow_creation', creation_id=row.creation.id) }}" style="display:inline;">
+          <button type="submit" class="btn btn-sm btn-secondary">Unfollow</button>
+        </form>
+        <a class="btn btn-sm btn-primary" href="{{ url_for('app_views.creation_view', creation_id=row.creation.id) }}">Open</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

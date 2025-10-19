@@ -75,7 +75,7 @@ def follow_creator(creator_id):
     if not UserFollowsCreator.query.filter_by(user_id=current_user.id, creator_id=creator_id).first():
         db.session.add(UserFollowsCreator(user_id=current_user.id, creator_id=creator_id))
         db.session.commit()
-    return redirect(url_for('app_views.list_creators'))
+    return redirect(request.referrer or url_for('app_views.list_creators'))
 
 @app_views.route('/creators/<string:creator_id>/unfollow', methods=['POST'])
 @login_required
@@ -84,7 +84,7 @@ def unfollow_creator(creator_id):
     if rel:
         db.session.delete(rel)
         db.session.commit()
-    return redirect(url_for('app_views.list_creators'))
+    return redirect(request.referrer or url_for('app_views.list_creators'))
 
 @app_views.route('/creations')
 def list_creations():
@@ -98,7 +98,7 @@ def follow_creation(creation_id):
     if not UserFollowsCreation.query.filter_by(user_id=current_user.id, creation_id=creation_id).first():
         db.session.add(UserFollowsCreation(user_id=current_user.id, creation_id=creation_id))
         db.session.commit()
-    return redirect(url_for('app_views.list_creations'))
+    return redirect(request.referrer or url_for('app_views.list_creations'))
 
 @app_views.route('/creations/<creation_id>/unfollow', methods=['POST'])
 @login_required
@@ -107,7 +107,7 @@ def unfollow_creation(creation_id):
     if rel:
         db.session.delete(rel)
         db.session.commit()
-    return redirect(url_for('app_views.list_creations'))
+    return redirect(request.referrer or url_for('app_views.list_creations'))
 
 @app_views.route('/creations/<creation_id>')
 def creation_view(creation_id):
@@ -308,6 +308,36 @@ def continue_creation(creation_id):
         return redirect(url_for('app_views.post_view', post_id=next_post.id))
     flash('No unread posts found for this creation.')
     return redirect(url_for('app_views.creation_view', creation_id=creation_id))
+
+
+@app_views.route('/following')
+@login_required
+def following_creations():
+    """Show a table of creations the current user follows with most recent read and posts-since counts."""
+    followed_rels = UserFollowsCreation.query.filter_by(user_id=current_user.id).all()
+    rows = []
+    for rel in followed_rels:
+        creation = Creation.query.get(rel.creation_id)
+        if not creation:
+            continue
+        # get per-creation progress
+        prog = current_user.get_creation_progress(creation.id)
+        last_ref = prog.last_reference if prog and prog.last_reference is not None else None
+        last_post = None
+        if last_ref is not None:
+            # find the post with that reference (or the nearest)
+            posts = sorted(creation.posts, key=lambda p: p.reference)
+            for p in posts[::-1]:
+                if p.reference <= last_ref:
+                    last_post = p
+                    break
+        # count posts since last_ref
+        if last_ref is None:
+            posts_since = len(creation.posts)
+        else:
+            posts_since = sum(1 for p in creation.posts if p.reference > last_ref)
+        rows.append({'creation': creation, 'last_post': last_post, 'posts_since': posts_since})
+    return render_template('user/following_creations.html', rows=rows)
 
 @app_views.route('/export_epub', methods=['POST'])
 @login_required

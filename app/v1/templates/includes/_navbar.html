@@ -34,6 +34,11 @@
       <li class="nav-item nav-item-about">
         <a class="nav-link" href="{{ url_for('app_views.about') }}">About</a>
       </li>
+      {% if current_user.is_authenticated %}
+      <li class="nav-item nav-item-following">
+        <a class="nav-link" href="{{ url_for('app_views.following_creations') }}">Following</a>
+      </li>
+      {% endif %}
 
     </ul>
     <ul class="navbar-nav ml-auto">
