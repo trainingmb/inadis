@@ -8,6 +8,7 @@ from models.creation import Creation
 from models.post import Post
 from models import db
 from models.user_creation import UserFollowsCreator, UserFollowsCreation, UserPostProgress
+from app.v1.forms.postforms import ExportForm
 import io
 from ebooklib import epub
 import zipfile
@@ -122,7 +123,8 @@ def creation_view(creation_id):
         unread_posts = [p for p in posts if p.id not in read_post_ids]
     template = 'user/creation_view.html' if current_user.is_authenticated else 'creation_view.html'
     followed_creations = [fc.creation for fc in current_user.followed_creations] if current_user.is_authenticated else []
-    return render_template(template, creation=creation, posts=posts, read_post_ids=read_post_ids, unread_posts=unread_posts, followed_creations=followed_creations)
+    export_form = ExportForm() if current_user.is_authenticated else None
+    return render_template(template, creation=creation, posts=posts, read_post_ids=read_post_ids, unread_posts=unread_posts, followed_creations=followed_creations, export_form=export_form)
 
 @app_views.route('/posts/<string:post_id>', methods=['GET', 'POST'])
 def post_view(post_id):

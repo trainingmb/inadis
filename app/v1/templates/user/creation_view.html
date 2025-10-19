@@ -137,6 +137,9 @@ Creation View
           <div id="unread_epub_section" class="mt-2">
             <h5>Select Unread Posts to Export as EPUB</h5>
             <form id="epub_export_form" method="post" action="{{ url_for('app_views.export_epub') }}">
+              {% if export_form %}
+                {{ export_form.csrf_token }}
+              {% endif %}
               <div class="mb-2">
                 <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(true)">Select All</button>
                 <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(false)">Deselect All</button>
