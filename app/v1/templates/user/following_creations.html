@@ -28,6 +28,12 @@
           <button type="submit" class="btn btn-sm btn-secondary">Unfollow</button>
         </form>
         <a class="btn btn-sm btn-primary" href="{{ url_for('app_views.creation_view', creation_id=row.creation.id) }}">Open</a>
+        <form method="post" action="{{ url_for('app_views.export_since_last_read', creation_id=row.creation.id) }}" style="display:inline;">
+          {% if export_form %}
+            {{ export_form.csrf_token }}
+          {% endif %}
+          <button type="submit" class="btn btn-sm btn-success">Export since last read</button>
+        </form>
       </td>
     </tr>
     {% endfor %}

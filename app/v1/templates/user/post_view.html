@@ -119,6 +119,22 @@ Creation View
         <button id="edit_post_btn" type="button" class="btn btn-primary btn-sm  btn-link"> Edit {{ post.title.split(' ')[0].capitalize() }} </button>
     </div>
 
+    <div class="post_details_mark float-right">
+        {% if current_user.is_authenticated %}
+            {% if is_read %}
+                <form method="post" action="{{ url_for('app_views.mark_post_unread', post_id=post.id) }}" class="mb-0">
+                    {{ form.csrf_token }}
+                    <button type="submit" class="btn btn-sm btn-warning">Mark as unread</button>
+                </form>
+            {% else %}
+                <form method="post" action="{{ url_for('app_views.mark_post_read', post_id=post.id) }}" class="mb-0">
+                    {{ form.csrf_token }}
+                    <button type="submit" class="btn btn-sm btn-success">Mark as read</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+
 </div>
 <div id="post_details_edit" class='container post'>
     <form action="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=post.id)}}" method="POST">

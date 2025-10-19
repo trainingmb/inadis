@@ -139,20 +139,26 @@ def post_view(post_id):
     if current_user.is_authenticated:
         progress = UserPostProgress.query.filter_by(user_id=current_user.id, post_id=post.id).first()
         is_read = progress.is_read if progress else False
-        if request.method == 'POST':
-            if not progress:
-                progress = UserPostProgress(user_id=current_user.id, post_id=post.id, is_read=True)
-                db.session.add(progress)
-            else:
-                progress.is_read = True
-            db.session.commit()
-            # Update per-creation progress: set last_post_id and last_reference for this creation
+
+        # Mark as read when the user views the post (GET) or explicitly posts the mark-read form (POST)
+        if not is_read:
             try:
-                current_user.set_creation_progress(creation.id, last_post_id=post.id, last_reference=post.reference)
+                if not progress:
+                    progress = UserPostProgress(user_id=current_user.id, post_id=post.id, is_read=True)
+                    db.session.add(progress)
+                else:
+                    progress.is_read = True
+                db.session.commit()
+                # Update per-creation progress: set last_post_id and last_reference for this creation
+                try:
+                    current_user.set_creation_progress(creation.id, last_post_id=post.id, last_reference=post.reference)
+                except Exception:
+                    db.session.rollback()
+                is_read = True
             except Exception:
+                # If marking fails, rollback and continue rendering without breaking the view
                 db.session.rollback()
-            
-            is_read = True
+                is_read = progress.is_read if progress else False
     # provide an edit form to the template (prefilled) so templates expecting 'form' won't error
     try:
         form = BasePostForm()
@@ -182,6 +188,40 @@ def mark_post_read(post_id):
             current_user.set_creation_progress(post.creation_id, last_post_id=post.id, last_reference=post.reference)
         except Exception:
             db.session.rollback()
+    return redirect(request.referrer or url_for('app_views.post_view', post_id=post_id))
+
+
+@app_views.route('/posts/<string:post_id>/mark_unread', methods=['POST'])
+@login_required
+def mark_post_unread(post_id):
+    """Mark a post as unread (remove user's read progress for the post) and adjust per-creation progress."""
+    try:
+        progress = UserPostProgress.query.filter_by(user_id=current_user.id, post_id=post_id).first()
+        if progress:
+            db.session.delete(progress)
+            db.session.commit()
+    except Exception:
+        db.session.rollback()
+
+    # Recompute per-creation progress for the creation this post belongs to
+    post = Post.query.get(post_id)
+    if post:
+        try:
+            # find highest-reference read post for this creation
+            sub = db.session.query(UserPostProgress, Post).join(Post, UserPostProgress.post_id == Post.id).filter(
+                UserPostProgress.user_id == current_user.id,
+                UserPostProgress.is_read == True,
+                Post.creation_id == post.creation_id
+            ).order_by(Post.reference.desc()).first()
+            if sub:
+                highest_post = sub[1]
+                current_user.set_creation_progress(post.creation_id, last_post_id=highest_post.id, last_reference=highest_post.reference)
+            else:
+                # no read posts left for this creation
+                current_user.set_creation_progress(post.creation_id, last_post_id=None, last_reference=None)
+        except Exception:
+            db.session.rollback()
+
     return redirect(request.referrer or url_for('app_views.post_view', post_id=post_id))
 
 
@@ -351,7 +391,69 @@ def following_creations():
         else:
             posts_since = sum(1 for p in creation.posts if p.reference > last_ref)
         rows.append({'creation': creation, 'last_post': last_post, 'posts_since': posts_since})
-    return render_template('user/following_creations.html', rows=rows)
+    export_form = ExportForm()
+    return render_template('user/following_creations.html', rows=rows, export_form=export_form)
+
+
+@app_views.route('/creations/<creation_id>/export_since_last_read', methods=['POST'])
+@login_required
+def export_since_last_read(creation_id):
+    """Export posts since the user's last read point for a specific creation, mark them read, and update creation progress."""
+    try:
+        creation = Creation.query.get_or_404(creation_id)
+        prog = current_user.get_creation_progress(creation_id)
+        last_ref = prog.last_reference if prog and prog.last_reference is not None else None
+
+        posts = sorted(creation.posts, key=lambda p: p.reference)
+        to_export = [p for p in posts if last_ref is None or p.reference > last_ref]
+        if not to_export:
+            flash('No new posts to export for this creation.')
+            return redirect(request.referrer or url_for('app_views.following_creations'))
+
+        # build EPUB
+        book = epub.EpubBook()
+        book.set_identifier(f"creation-{creation.id}-since-{last_ref if last_ref is not None else 'start'}")
+        book.set_title(f"{creation.name} - Posts since {last_ref if last_ref is not None else 'start'}")
+        book.set_language('en')
+        book.add_author(current_user.username)
+        chapters = []
+        for idx, post in enumerate(to_export, 1):
+            c = epub.EpubHtml(title=post.title, file_name=f'chap_{idx}.xhtml', lang='en')
+            c.content = f'<h2>{post.title}</h2><div>{post.content}</div>'
+            book.add_item(c)
+            chapters.append(c)
+        book.toc = chapters
+        book.spine = ['nav'] + chapters
+        book.add_item(epub.EpubNcx())
+        book.add_item(epub.EpubNav())
+
+        buf = io.BytesIO()
+        epub.write_epub(buf, book)
+        buf.seek(0)
+
+        # Mark exported posts as read and update creation progress
+        try:
+            for post in to_export:
+                progress = UserPostProgress.query.filter_by(user_id=current_user.id, post_id=post.id).first()
+                if not progress:
+                    progress = UserPostProgress(user_id=current_user.id, post_id=post.id, is_read=True)
+                    db.session.add(progress)
+                else:
+                    progress.is_read = True
+            # Update per-creation progress to the highest exported reference
+            highest = max(p.reference for p in to_export)
+            highest_post = max(to_export, key=lambda p: p.reference)
+            current_user.set_creation_progress(creation_id, last_post_id=highest_post.id, last_reference=highest)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error marking exported posts as read: {e}')
+
+        filename = f"{creation.name.replace(' ', '_')}_since_{last_ref if last_ref is not None else 'start'}.epub"
+        return send_file(buf, as_attachment=True, download_name=filename, mimetype='application/epub+zip')
+    except Exception as e:
+        flash(f'Error exporting posts since last read: {e}')
+        return redirect(request.referrer or url_for('app_views.following_creations'))
 
 @app_views.route('/export_epub', methods=['POST'])
 @login_required
