@@ -19,6 +19,19 @@ Creation View
                 <a href="{{ url_for('app_views.rud_creator', creator_id=creation.creator_id)}}">{{creation.creator.name}}
                 </a>
             </p>
+      {% if current_user.is_authenticated %}
+      <p>
+        {% if creation in followed_creations %}
+          <form method="post" action="{{ url_for('app_views.unfollow_creation', creation_id=creation.id) }}">
+            <button type="submit" class="btn btn-sm btn-secondary">Unfollow</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('app_views.follow_creation', creation_id=creation.id) }}">
+            <button type="submit" class="btn btn-sm btn-primary">Follow</button>
+          </form>
+        {% endif %}
+      </p>
+      {% endif %}
     </div>
     <div class="creation_details_delete float-right">
         <form class="" action="{{ url_for('app_views.rud_creation', creator_id=creation.creator_id, creation_id=creation.id)}}" method="POST">

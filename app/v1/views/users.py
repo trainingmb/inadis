@@ -120,7 +120,8 @@ def creation_view(creation_id):
     if current_user.is_authenticated:
         unread_posts = [p for p in posts if p.id not in read_post_ids]
     template = 'user/creation_view.html' if current_user.is_authenticated else 'creation_view.html'
-    return render_template(template, creation=creation, posts=posts, read_post_ids=read_post_ids, unread_posts=unread_posts)
+    followed_creations = [fc.creation for fc in current_user.followed_creations] if current_user.is_authenticated else []
+    return render_template(template, creation=creation, posts=posts, read_post_ids=read_post_ids, unread_posts=unread_posts, followed_creations=followed_creations)
 
 @app_views.route('/posts/<string:post_id>', methods=['GET', 'POST'])
 def post_view(post_id):
