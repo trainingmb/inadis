@@ -37,3 +37,15 @@ class UserPostProgress(db.Model):
     post_id = db.Column(db.String(60), db.ForeignKey('posts.id'), primary_key=True)
     is_read = db.Column(db.Boolean, default=False)
     read_at = db.Column(db.DateTime) 
+
+
+class UserCreationProgress(db.Model):
+    """Tracks per-creation progress for a user: last_read_post_id and last_read_reference
+    A better name than 'consumed' is 'progress' or 'last_read'. We'll use UserCreationProgress.
+    """
+    __tablename__ = 'user_creation_progress'
+    user_id = db.Column(db.String(60), db.ForeignKey('users.id'), primary_key=True)
+    creation_id = db.Column(db.String(60), db.ForeignKey('creations.id'), primary_key=True)
+    last_post_id = db.Column(db.String(60), db.ForeignKey('posts.id'), nullable=True)
+    last_reference = db.Column(db.Integer, nullable=True)
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())

@@ -102,6 +102,28 @@ Creation View
   </form>
   <small class="text-muted">Drag to reorder posts before exporting.</small>
 </div>
+  {% endif %}
+
+  <!-- Export range form -->
+  <div class="mt-4">
+    <h5>Export a range of posts</h5>
+    <form method="post" action="{{ url_for('app_views.export_creation_range', creation_id=creation.id) }}">
+      <div class="form-row">
+        <div class="form-group col-md-3">
+          <label for="start_ref">Start reference</label>
+          <input type="number" class="form-control" name="start_ref" id="start_ref" required>
+        </div>
+        <div class="form-group col-md-3">
+          <label for="end_ref">End reference</label>
+          <input type="number" class="form-control" name="end_ref" id="end_ref" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-secondary">Export Range as EPUB</button>
+    </form>
+  </div>
+  <div class="mt-3">
+    <a class="btn btn-success" href="{{ url_for('app_views.continue_creation', creation_id=creation.id) }}">Continue where I left off</a>
+  </div>
 <script>
 function selectAllUnread(val) {
   document.querySelectorAll('#unread_posts_list input[type="checkbox"]').forEach(cb => cb.checked = val);

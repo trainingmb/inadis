@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>My Dashboard</h2>
+<div class="mb-3">
+  <a class="btn btn-primary" href="{{ url_for('app_views.export_unread_followed') }}">Export all unread from followed creations</a>
+</div>
 <h3>Followed Creators</h3>
 <ul>
   {% for creator in followed_creators %}

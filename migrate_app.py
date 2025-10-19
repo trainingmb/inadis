@@ -12,7 +12,7 @@ from models.creator import Creator
 from models.creation import Creation
 from models.post import Post
 from models.post_content import PostContent
-from models.user_creation import UserCreation
+from models.user_creation import UserCreation, UserFollowsCreator, UserFollowsCreation, UserPostProgress, UserCreationProgress
 
 def create_migrate_app():
     """Create Flask app for migrations"""
