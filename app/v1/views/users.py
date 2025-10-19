@@ -481,7 +481,7 @@ def export_epub():
         # Create EPUB
         book = epub.EpubBook()
         book.set_identifier(f"creation-{ordered_posts[0].creation_id if ordered_posts else 'unknown'}")
-    book.set_title(f"EPUB Export - {ordered_posts[0].creation.name if ordered_posts else 'Selection'}")
+        book.set_title(f"EPUB Export - {ordered_posts[0].creation.name if ordered_posts else 'Selection'}")
         book.set_language('en')
         book.add_author(current_user.username)
         chapters = []

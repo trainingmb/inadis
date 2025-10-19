@@ -61,3 +61,13 @@ class Creation(BaseModel):
             except ValueError:
                 return None
         return None
+
+    @property
+    def title(self):
+        """Backward compatible alias for creation name used in templates and admin code."""
+        return self.name
+
+    @title.setter
+    def title(self, value):
+        """Allow assignment to `creation.title` to update `name` column."""
+        self.name = value
