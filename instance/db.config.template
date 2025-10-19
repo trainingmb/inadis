@@ -1,0 +1,14 @@
+# Database Configuration Template
+# Copy this file to db.config and update with your actual values
+# NEVER commit db.config to version control!
+
+SQLALCHEMY_DATABASE_URI="your-database-connection-string-here"
+SECRET_KEY="your-super-secure-secret-key-here-change-this-immediately"
+
+# Example database URIs:
+# SQLite: sqlite:///path/to/database.db
+# MySQL: mysql+pymysql://username:password@host:port/database
+# PostgreSQL: postgresql://username:password@host:port/database
+
+# Generate a secure SECRET_KEY using:
+# python -c "import secrets; print(secrets.token_urlsafe(32))"
