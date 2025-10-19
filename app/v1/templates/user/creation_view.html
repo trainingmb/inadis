@@ -10,7 +10,27 @@ Creation View
 
 {% block content %}
 <div id="creation_details_view" class='container creation'>
-    <div class="creation_details align-right">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h2 class="h3 mb-0">{{ creation.name }}</h2>
+      <small class="text-muted">Creator: <a href="{{ url_for('app_views.rud_creator', creator_id=creation.creator_id)}}">{{creation.creator.name}}</a></small>
+    </div>
+    <div class="d-flex gap-2">
+      {% if current_user.is_authenticated %}
+        {% if creation in followed_creations %}
+          <form method="post" action="{{ url_for('app_views.unfollow_creation', creation_id=creation.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Unfollow</button>
+          </form>
+        {% else %}
+          <form method="post" action="{{ url_for('app_views.follow_creation', creation_id=creation.id) }}" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-primary">Follow</button>
+          </form>
+        {% endif %}
+        <a class="btn btn-sm btn-success ms-2" href="{{ url_for('app_views.continue_creation', creation_id=creation.id) }}">Continue where I left off</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="creation_details align-right">
             <p>
                 <strong>Regex Filter</strong>:{{creation.regexfilter}}
             </p>
@@ -75,70 +95,93 @@ Creation View
     </form>
 </div>
 {% endif %}
-<div id="posts_in_creation">
-	<h4 class="h4"> <a href=""> Posts </a> </h4> </br>
-	<div class="well card card-body bg-light">
-	{% if posts %}
-	<ul>
-		{% for post in posts %}
-		<li>
-			<a href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=post.id)}}"> {{post.title}} </a> - {{post.fetched_at}}
-		</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-	</br>
-	<a href="{{ url_for('app_views.create_post', creator_id=creation.creator_id, creation_id=creation.id )}}"> Add Post </a>
-	</div>
-</div>
-<!-- Unread Posts EPUB Export Section -->
-{% if current_user.is_authenticated and unread_posts %}
-<div id="unread_epub_section" class="mt-4">
-  <h5>Select Unread Posts to Export as EPUB</h5>
-  <form id="epub_export_form" method="post" action="{{ url_for('app_views.export_epub') }}">
-    <div class="mb-2">
-      <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(true)">Select All</button>
-      <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(false)">Deselect All</button>
-    </div>
-    <ul id="unread_posts_list" class="list-group mb-2">
-      {% for post in unread_posts %}
-      <li class="list-group-item d-flex align-items-center" draggable="true">
-        <input type="checkbox" name="post_ids" value="{{ post.id }}" class="mr-2" checked>
-        <span class="post-title">{{ post.title }}</span>
-        <span class="ml-auto text-muted small">{{ post.fetched_at }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-    <div class="form-check mb-2">
-      <input class="form-check-input" type="checkbox" name="mark_as_read" id="mark_as_read">
-      <label class="form-check-label" for="mark_as_read">Mark selected posts as read after export</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Generate EPUB</button>
-  </form>
-  <small class="text-muted">Drag to reorder posts before exporting.</small>
-</div>
-  {% endif %}
-
-  <!-- Export range form -->
-  <div class="mt-4">
-    <h5>Export a range of posts</h5>
-    <form method="post" action="{{ url_for('app_views.export_creation_range', creation_id=creation.id) }}">
-      <div class="form-row">
-        <div class="form-group col-md-3">
-          <label for="start_ref">Start reference</label>
-          <input type="number" class="form-control" name="start_ref" id="start_ref" required>
+    <div id="creation_tabs" class="mt-3">
+      <ul class="nav nav-tabs" id="creationTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="posts-tab" data-bs-toggle="tab" data-bs-target="#posts" type="button" role="tab" aria-controls="posts" aria-selected="true">Posts</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="export-tab" data-bs-toggle="tab" data-bs-target="#export" type="button" role="tab" aria-controls="export" aria-selected="false">Export</button>
+        </li>
+      </ul>
+      <div class="tab-content p-3 border border-top-0" id="creationTabContent">
+        <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+          <div class="mb-2">
+            <a class="btn btn-sm btn-outline-primary" href="{{ url_for('app_views.create_post', creator_id=creation.creator_id, creation_id=creation.id )}}">Add Post</a>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              {% if posts %}
+              <ul class="list-group list-group-flush">
+                {% for post in posts %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <a href="{{ url_for('app_views.rud_post', creator_id=creation.creator_id, creation_id=creation.id, post_id=post.id)}}">{{post.title}}</a>
+                    <div class="small text-muted">Ref: {{ post.reference }} · {{ post.fetched_at }}</div>
+                  </div>
+                  <div>
+                    <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('app_views.post_view', post_id=post.id) }}">Open</a>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <div class="text-muted">No posts found.</div>
+              {% endif %}
+            </div>
+          </div>
         </div>
-        <div class="form-group col-md-3">
-          <label for="end_ref">End reference</label>
-          <input type="number" class="form-control" name="end_ref" id="end_ref" required>
+        <div class="tab-pane fade" id="export" role="tabpanel" aria-labelledby="export-tab">
+          <!-- Unread Posts EPUB Export Section -->
+          {% if current_user.is_authenticated and unread_posts %}
+          <div id="unread_epub_section" class="mt-2">
+            <h5>Select Unread Posts to Export as EPUB</h5>
+            <form id="epub_export_form" method="post" action="{{ url_for('app_views.export_epub') }}">
+              <div class="mb-2">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(true)">Select All</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="selectAllUnread(false)">Deselect All</button>
+              </div>
+              <ul id="unread_posts_list" class="list-group mb-2">
+                {% for post in unread_posts %}
+                <li class="list-group-item d-flex align-items-center" draggable="true">
+                  <input type="checkbox" name="post_ids" value="{{ post.id }}" class="mr-2" checked>
+                  <span class="post-title">{{ post.title }}</span>
+                  <span class="ms-auto text-muted small">{{ post.fetched_at }}</span>
+                </li>
+                {% endfor %}
+              </ul>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="mark_as_read" id="mark_as_read">
+                <label class="form-check-label" for="mark_as_read">Mark selected posts as read after export</label>
+              </div>
+              <button type="submit" class="btn btn-primary">Generate EPUB</button>
+            </form>
+            <small class="text-muted">Drag to reorder posts before exporting.</small>
+          </div>
+          {% endif %}
+
+          <!-- Export range form -->
+          <div class="mt-3">
+            <h5>Export a range of posts</h5>
+            <form method="post" action="{{ url_for('app_views.export_creation_range', creation_id=creation.id) }}">
+              <div class="row">
+                <div class="col-md-3">
+                  <label for="start_ref">Start reference</label>
+                  <input type="number" class="form-control" name="start_ref" id="start_ref" required>
+                </div>
+                <div class="col-md-3">
+                  <label for="end_ref">End reference</label>
+                  <input type="number" class="form-control" name="end_ref" id="end_ref" required>
+                </div>
+              </div>
+              <div class="mt-2">
+                <button type="submit" class="btn btn-secondary">Export Range as EPUB</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-secondary">Export Range as EPUB</button>
-    </form>
-  </div>
-  <div class="mt-3">
-    <a class="btn btn-success" href="{{ url_for('app_views.continue_creation', creation_id=creation.id) }}">Continue where I left off</a>
-  </div>
+    </div>
 <script>
 function selectAllUnread(val) {
   document.querySelectorAll('#unread_posts_list input[type="checkbox"]').forEach(cb => cb.checked = val);
