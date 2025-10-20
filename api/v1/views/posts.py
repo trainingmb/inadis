@@ -139,15 +139,31 @@ def gen_post():
                     data['posted_at'] = datetime.now()
             else:
                 data['posted_at'] = datetime.now()
-            instance = Post(**data)
-            instance.creation_id = create.id
-            instance2 = PostContent(**data2)
-            instance2.post_id = instance.id
-            for post in create.posts:
-                if post.reference == data['reference']:
-                    post.delete()
-            instance.save()
-            instance2.save()
+            # If a post with the same creation and reference already exists, update it
+            existing = Post.query.filter_by(creation_id=create.id, reference=data['reference']).first()
+            if existing:
+                # update allowed fields on the existing post
+                for key in ('title', 'comment', 'reference', 'posted_at', 'fetched_at'):
+                    if key in data:
+                        setattr(existing, key, data[key])
+                existing.save()
+
+                # update or create PostContent for the existing post
+                content_obj = PostContent.query.filter_by(post_id=existing.id).first()
+                if content_obj:
+                    content_obj.content = data2.get('content', '')
+                    content_obj.save()
+                else:
+                    new_content = PostContent(post_id=existing.id, content=data2.get('content', ''))
+                    new_content.save()
+            else:
+                # create new post and its content
+                instance = Post(**data)
+                instance.creation_id = create.id
+                instance.save()
+                instance2 = PostContent(post_id=instance.id, content=data2.get('content', ''))
+                instance2.save()
+
             return make_response(jsonify({"creationid": create.id, "creationname": create.name}), 201)
     return make_response(jsonify({"creationid": None, "creationname": ""}), 201)
 
