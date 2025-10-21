@@ -10,3 +10,4 @@ flask-wtf
 python-dateutil
 regex
 pymysql
+pytest

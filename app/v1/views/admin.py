@@ -93,7 +93,7 @@ def admin_creations():
     creations = Creation.query.all()
     return render_template('admin/creations.html', creations=creations)
 
-@app_views.route('/admin/creations/<int:creation_id>/edit', methods=['GET', 'POST'])
+@app_views.route('/admin/creations/<creation_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def admin_edit_creation(creation_id):
     creation = Creation.query.get_or_404(creation_id)
@@ -105,7 +105,7 @@ def admin_edit_creation(creation_id):
         return redirect(url_for('app_views.admin_creations'))
     return render_template('admin/edit_creation.html', creation=creation)
 
-@app_views.route('/admin/creations/<int:creation_id>/delete', methods=['POST'])
+@app_views.route('/admin/creations/<creation_id>/delete', methods=['POST'])
 @admin_required
 def admin_delete_creation(creation_id):
     creation = Creation.query.get_or_404(creation_id)

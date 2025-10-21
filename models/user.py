@@ -15,7 +15,8 @@ class User(UserMixin, BaseModel, db.Model):
     id = db.Column(db.String(60), primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
+    # Increase size to accommodate hashed passwords (avoid truncation)
+    password = db.Column(db.String(255))
     name = db.Column(db.String(128))
     api_key = db.Column(db.String(16), unique=True, nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
@@ -37,6 +38,13 @@ class User(UserMixin, BaseModel, db.Model):
     )
     post_progress = db.relationship(
         'UserPostProgress',
+        backref='user',
+        lazy='dynamic',
+        cascade='all, delete-orphan'
+    )
+    # Per-creation progress (tracks last read post/reference for a creation)
+    creation_progress = db.relationship(
+        'UserCreationProgress',
         backref='user',
         lazy='dynamic',
         cascade='all, delete-orphan'
@@ -71,6 +79,23 @@ class User(UserMixin, BaseModel, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def get_creation_progress(self, creation_id):
+        """Return the UserCreationProgress object for a given creation or None."""
+        return self.creation_progress.filter_by(creation_id=creation_id).first()
+
+    def set_creation_progress(self, creation_id, last_post_id=None, last_reference=None):
+        """Create or update per-creation progress for this user."""
+        prog = self.get_creation_progress(creation_id)
+        if not prog:
+            from models.user_creation import UserCreationProgress
+            prog = UserCreationProgress(user_id=self.id, creation_id=creation_id,
+                                        last_post_id=last_post_id, last_reference=last_reference)
+            db.session.add(prog)
+        else:
+            prog.last_post_id = last_post_id
+            prog.last_reference = last_reference
+        db.session.commit()
 
 
 # Add db.Model inheritance after the class is defined

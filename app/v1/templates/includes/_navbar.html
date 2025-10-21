@@ -12,7 +12,7 @@
           Home </a>
       </li>
       <li class="nav-item dropdown nav-item-creators">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="prenavbarHandler('{{url_for("api_views.get_creators")}}', postnavbarHandlerJson);">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-api-url="{{ url_for('api_views.get_creators') }}" onclick="prenavbarHandler(this.dataset.apiUrl, postnavbarHandlerJson);">
           Creators
         </a>
         <div id="navbar_creator_list"class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -22,7 +22,7 @@
         </div>
       </li>
       <li class="nav-item dropdown nav-item-creations">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onclick="prenavbarHandler('{{url_for("api_views.get_all_creations")}}', postnavbarHandlerJsonCreations);">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-api-url="{{ url_for('api_views.get_all_creations') }}" onclick="prenavbarHandler(this.dataset.apiUrl, postnavbarHandlerJsonCreations);">
           Creations
         </a>
         <div id="navbar_creation_list"class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -31,6 +31,11 @@
           <a class="dropdown-item" href="#">Something else here</a>
         </div>
       </li>
+      {% if current_user.is_authenticated %}
+      <li class="nav-item nav-item-following">
+        <a class="nav-link" href="{{ url_for('app_views.following_creations') }}">Following</a>
+      </li>
+      {% endif %}
       <li class="nav-item nav-item-about">
         <a class="nav-link" href="{{ url_for('app_views.about') }}">About</a>
       </li>

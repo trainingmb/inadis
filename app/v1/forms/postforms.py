@@ -2,7 +2,7 @@
 """
 Base for Post Forms
 """
-from app.v1.forms import DateTimeField, DataRequired, FlaskForm, IntegerField, Length, SelectField, StringField, SubmitField
+from app.v1.forms import DateTimeField, DataRequired, FlaskForm, IntegerField, Length, SelectField, StringField, SubmitField, BooleanField
 
 class BasePostForm(FlaskForm):
     """
@@ -23,3 +23,9 @@ class BasePostForm(FlaskForm):
         if not rv:
             return False
         return True
+
+
+class ExportForm(FlaskForm):
+    """Minimal form to provide CSRF token for export actions."""
+    mark_as_read = BooleanField('Mark as read')
+    submit = SubmitField('Generate EPUB')
